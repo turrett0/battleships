@@ -1,15 +1,24 @@
 import {FC, useEffect, useState} from "react";
 import BoardComponent from "./components/BoardComponent/BoardComponent";
-import {Board} from "./models/Board";
+import Dock from "./components/Ship/Dock/Dock";
+import {Board, roles} from "./models/Board";
 import styles from "./styles/GlobalStyles.module.scss";
 
 const App: FC = () => {
-  const [board, setBoard] = useState<Board>(new Board());
+  const [userBoard, setUserBoard] = useState<Board>(
+    new Board("Dmitry", roles.USER, false)
+  );
+  const [partnerBoard, setPartnerBoard] = useState<Board>(
+    new Board("Barbek Akzum", roles.PARTNER, true)
+  );
 
   function restart() {
-    const newBoard = new Board();
-    newBoard.initCells();
-    setBoard(newBoard);
+    const newUserBoard = new Board("Dmitry", roles.USER, false);
+    const newPartnerBoard = new Board("Barbek Akzum", roles.PARTNER, true);
+    newUserBoard.initCells();
+    newPartnerBoard.initCells();
+    setUserBoard(newUserBoard);
+    setPartnerBoard(newPartnerBoard);
   }
 
   useEffect(() => {
@@ -19,8 +28,10 @@ const App: FC = () => {
   return (
     <div className={styles.app}>
       <div className={styles.container}>
-        <BoardComponent board={board} />
+        <BoardComponent board={userBoard} setBoard={setUserBoard} />
+        <BoardComponent board={partnerBoard} setBoard={setPartnerBoard} />
       </div>
+      <Dock />
     </div>
   );
 };
