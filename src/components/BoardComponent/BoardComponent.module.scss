@@ -1,0 +1,5 @@
+.board {
+  height: 100%;
+  display: grid;
+  grid-template: repeat(10, 1fr) / repeat(10, 1fr);
+}
