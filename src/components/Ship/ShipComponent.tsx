@@ -1,32 +1,31 @@
 import React, {FC, useState} from "react";
-import {Ship} from "../../../models/Ship";
+import useActions from "../../hooks/useActions";
+import {IShip} from "../../models/Ship";
 import styles from "./ShipComponent.module.scss";
 
 interface Props {
-  ship: Ship;
+  ship: IShip;
 }
 
 const ShipComponent: FC<Props> = ({ship}) => {
+  const {setDraggingShip} = useActions();
   const [isSetted, setIsSetted] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   function onDragStartHandler(
     e: React.DragEvent<HTMLDivElement>,
-    ship: Ship
+    ship: IShip
   ): void {
-    console.log("drag", ship);
-    e.dataTransfer.setData("ship", JSON.stringify(ship));
     setIsDragging(true);
+    setDraggingShip(ship);
   }
 
   function onDragEndHandler(e: React.DragEvent<HTMLDivElement>) {
-    console.log("dragEnd");
     setIsSetted(true);
   }
 
-  function onDropHandler(e: React.DragEvent<HTMLDivElement>, ship: Ship) {
+  function onDropHandler(e: React.DragEvent<HTMLDivElement>, ship: IShip) {
     e.preventDefault();
-    e.dataTransfer.setData("ship", JSON.stringify(ship));
   }
 
   return (

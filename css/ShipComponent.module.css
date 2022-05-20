@@ -1,0 +1,52 @@
+.ship {
+  width: 1rem;
+  height: 0.5rem;
+  background-color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ship {
+    background-color: white;
+  }
+}
+
+.unset {
+  border: 2px solid #00f;
+  background-color: rgba(0, 0, 255, 0.05);
+}
+
+.candrag {
+  border: 2px solid green;
+  background-color: rgba(0, 128, 0, 0.05);
+}
+
+.cannot-drag {
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+.setted {
+  border: 2px dotted gray;
+  background-color: rgba(128, 128, 128, 0.015);
+}
+
+.SMALL {
+  width: 2rem;
+  height: 2rem;
+}
+
+.MIDDLE {
+  width: 4rem;
+  height: 2rem;
+}
+
+.BIG {
+  width: 6rem;
+  height: 2rem;
+}
+
+.VERY_BIG {
+  width: 8rem;
+  height: 2rem;
+}
+/*# sourceMappingURL=ShipComponent.module.css.map */

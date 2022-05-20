@@ -1,4 +1,3 @@
-import {Cell} from "./Cell";
 import {nanoid} from "nanoid";
 
 export enum shipSizes {
@@ -15,18 +14,27 @@ export enum shipHealth {
   VERY_BIG = 4,
 }
 
-export class Ship {
+export interface IShip {
   size: shipSizes;
-  cell: Cell | null;
+  coords: {
+    startX: number;
+    endX: number;
+    startY: number;
+    endY: number;
+  } | null;
   health: shipHealth;
   id: string;
-
-  constructor(size: shipSizes, cell: Cell | null) {
-    this.size = size;
-    this.cell = cell;
-    this.health = shipHealth[size];
-    this.id = nanoid();
-  }
-
-  renderShip() {}
 }
+
+export const createShip = (
+  size: shipSizes,
+  coords: IShip["coords"],
+  id?: string
+): IShip => {
+  return {
+    size,
+    coords,
+    health: shipHealth[size],
+    id: id || nanoid(),
+  };
+};

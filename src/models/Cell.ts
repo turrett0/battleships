@@ -1,25 +1,24 @@
 import {nanoid} from "nanoid";
-import {Ship} from "./Ship";
+import {IShip} from "./Ship";
 
-export class Cell {
-  readonly x: number;
-  readonly y: number;
+export interface ICell {
+  x: number;
+  y: number;
   id: string;
   checked: boolean;
-  ship: Ship | null;
+  ship: IShip | null;
   highlighted: boolean;
   isShooted: boolean;
-
-  constructor(x: number, y: number, ship: Ship | null) {
-    this.x = x;
-    this.y = y;
-    this.id = nanoid();
-    this.checked = false;
-    this.ship = ship;
-    this.highlighted = false;
-    this.isShooted = false;
-  }
-  addShip(ship: Ship) {
-    this.ship = ship;
-  }
 }
+
+export const createCell = (x: number, y: number): ICell => {
+  return {
+    x,
+    y,
+    id: nanoid(),
+    checked: false,
+    ship: null,
+    highlighted: false,
+    isShooted: false,
+  };
+};

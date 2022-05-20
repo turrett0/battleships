@@ -1,42 +1,40 @@
-import React, {FC, useState} from "react";
+import React, {FC} from "react";
+import useActions from "../../hooks/useActions";
 import {useThrottle} from "../../hooks/useThrottle";
-import {Cell} from "../../models/Cell";
-import {Ship} from "../../models/Ship";
+import {ICell} from "../../models/Cell";
 import styles from "./CellComponent.module.scss";
 
 interface Props {
-  cell: Cell;
-  onClickHandler: (target: Cell) => void;
-  updateBoard: () => void;
-  onDragShipHandler: (target: Cell, ship: Ship) => void;
+  cell: ICell;
+  onClickHandler: (target: ICell) => void;
 }
 
-const CellComponent: FC<Props> = ({
-  cell,
-  onClickHandler,
-  updateBoard,
-  onDragShipHandler,
-}) => {
-  let test = useThrottle((e: React.DragEvent<HTMLDivElement>) => {
-    console.log(e);
-  }, 1000);
-
+const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
+  const {
+    setShipToCell,
+    setDraggingShip,
+    setHighlightCell,
+    removeHighlightCell,
+  } = useActions();
   function onDragLeaveHandler(e: React.DragEvent<HTMLDivElement>) {
-    cell.highlighted = false;
-    updateBoard();
+    // cell.highlighted = false;
+    removeHighlightCell(cell);
   }
 
-  function onDragOverHandler(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    test(e);
-  }
+  const onDragOverHandler = useThrottle(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      if (!cell.highlighted) {
+        setHighlightCell(cell);
+      }
+    },
+    300
+  );
 
   function onDropHandler(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-    let ship = JSON.parse(e.dataTransfer.getData("ship"));
-    cell.addShip(ship);
-    // setIsSelected(false);
-    updateBoard();
+    setShipToCell(cell);
+    removeHighlightCell(cell);
+    setDraggingShip(null);
   }
   return (
     <div
@@ -49,7 +47,10 @@ const CellComponent: FC<Props> = ({
       onDragLeave={(e) => {
         onDragLeaveHandler(e);
       }}
-      onDragOver={(e) => onDragOverHandler(e)}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOverHandler(e);
+      }}
       onDrop={(e) => {
         onDropHandler(e);
       }}
