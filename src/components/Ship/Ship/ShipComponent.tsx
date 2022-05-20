@@ -1,5 +1,5 @@
 import React, {FC, useState} from "react";
-import {Ship, shipSizes} from "../../../models/Ship";
+import {Ship} from "../../../models/Ship";
 import styles from "./ShipComponent.module.scss";
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
 
 const ShipComponent: FC<Props> = ({ship}) => {
   const [isSetted, setIsSetted] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   function onDragStartHandler(
     e: React.DragEvent<HTMLDivElement>,
@@ -15,6 +16,7 @@ const ShipComponent: FC<Props> = ({ship}) => {
   ): void {
     console.log("drag", ship);
     e.dataTransfer.setData("ship", JSON.stringify(ship));
+    setIsDragging(true);
   }
 
   function onDragEndHandler(e: React.DragEvent<HTMLDivElement>) {
@@ -38,9 +40,9 @@ const ShipComponent: FC<Props> = ({ship}) => {
           onDropHandler(e, ship);
         }}
         draggable={!isSetted}
-        className={`${styles.ship} ${styles[ship.size]}  ${
-          isSetted ? styles.setted : ""
-        }`}
+        className={`${styles.ship} ${styles[ship.size]} ${
+          isDragging ? styles.candrag : ""
+        }  ${isSetted ? styles.setted : ""}`}
       ></div>
     </div>
   );

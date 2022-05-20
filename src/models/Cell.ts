@@ -7,6 +7,8 @@ export class Cell {
   id: string;
   checked: boolean;
   ship: Ship | null;
+  highlighted: boolean;
+  isShooted: boolean;
 
   constructor(x: number, y: number, ship: Ship | null) {
     this.x = x;
@@ -14,6 +16,8 @@ export class Cell {
     this.id = nanoid();
     this.checked = false;
     this.ship = ship;
+    this.highlighted = false;
+    this.isShooted = false;
   }
   addShip(ship: Ship) {
     this.ship = ship;

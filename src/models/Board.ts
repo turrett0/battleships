@@ -1,4 +1,5 @@
 import {Cell} from "./Cell";
+import {Ship} from "./Ship";
 
 export enum roles {
   USER = "USER",
@@ -34,5 +35,16 @@ export class Board {
   }
   public higilightCell(target: Cell) {
     target.checked = true;
+  }
+
+  public findHighlightCells(target: Cell, ship: Ship) {
+    console.log(target);
+
+    const xCoord = target.x;
+    const yCoord = target.y;
+    const fromCell = yCoord - ship.health - 1;
+    for (let y = fromCell; y < yCoord; y++) {
+      this.cells[xCoord][y].highlighted = true;
+    }
   }
 }

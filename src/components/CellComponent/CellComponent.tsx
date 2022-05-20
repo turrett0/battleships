@@ -1,37 +1,50 @@
 import React, {FC, useState} from "react";
+import {useThrottle} from "../../hooks/useThrottle";
 import {Cell} from "../../models/Cell";
+import {Ship} from "../../models/Ship";
 import styles from "./CellComponent.module.scss";
 
 interface Props {
   cell: Cell;
   onClickHandler: (target: Cell) => void;
   updateBoard: () => void;
+  onDragShipHandler: (target: Cell, ship: Ship) => void;
 }
 
-const CellComponent: FC<Props> = ({cell, onClickHandler, updateBoard}) => {
-  const [isSelected, setIsSelected] = useState<boolean>(false);
+const CellComponent: FC<Props> = ({
+  cell,
+  onClickHandler,
+  updateBoard,
+  onDragShipHandler,
+}) => {
+  let test = useThrottle((e: React.DragEvent<HTMLDivElement>) => {
+    console.log(e);
+  }, 1000);
 
   function onDragLeaveHandler(e: React.DragEvent<HTMLDivElement>) {
-    setIsSelected(false);
+    cell.highlighted = false;
+    updateBoard();
   }
 
   function onDragOverHandler(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-    setIsSelected(true);
+    test(e);
   }
 
   function onDropHandler(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     let ship = JSON.parse(e.dataTransfer.getData("ship"));
     cell.addShip(ship);
-    setIsSelected(false);
+    // setIsSelected(false);
     updateBoard();
   }
   return (
     <div
-      className={`${styles.cell} ${cell.checked ? styles.missed : ""} ${
-        isSelected ? styles.selected : ""
-      } ${cell.ship ? styles.setted : ""}`}
+      className={`${styles.cell} ${
+        cell.isShooted ? (cell.ship ? styles.destroyed : styles.missed) : ""
+      } ${cell.highlighted ? styles.selected : ""} ${
+        cell.ship ? styles.setted : ""
+      }`}
       onClick={() => onClickHandler(cell)}
       onDragLeave={(e) => {
         onDragLeaveHandler(e);

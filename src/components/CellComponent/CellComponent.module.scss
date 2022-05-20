@@ -1,6 +1,12 @@
 .cell {
   border: 1px solid rgba(black, 0.3);
   cursor: pointer;
+
+  @media (prefers-color-scheme: dark) {
+    & {
+      border: 1px solid rgba(white, 0.3);
+    }
+  }
 }
 
 .used {
@@ -53,4 +59,9 @@
 
 .setted {
   background-color: black;
+  @media (prefers-color-scheme: dark) {
+    & {
+      background-color: #fff;
+    }
+  }
 }
