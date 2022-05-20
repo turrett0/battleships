@@ -20,7 +20,7 @@ const UserBoardComponent: FC = () => {
           ? "Моя Доска"
           : `Доска пользователя ${board.username}`}
       </span>
-      <div className={styles.board}>
+      <div className={styles.board} draggable={false}>
         {board.cells.map((row, index) => (
           <Fragment key={index}>
             {row.map((cell) => (

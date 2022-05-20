@@ -12,6 +12,7 @@ const App: FC = () => {
       </div>
 
       <Dock />
+      {/* <ShipsHealthBox /> */}
     </div>
   );
 };

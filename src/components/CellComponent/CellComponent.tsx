@@ -1,4 +1,5 @@
 import React, {FC} from "react";
+import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
 import {useThrottle} from "../../hooks/useThrottle";
 import {ICell} from "../../models/Cell";
@@ -14,10 +15,11 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
     setShipToCell,
     setDraggingShip,
     setHighlightCell,
+    setIsDragging,
     removeHighlightCell,
   } = useActions();
+  const isDraggingStore = useAppSelector(({board}) => board.isDragging);
   function onDragLeaveHandler(e: React.DragEvent<HTMLDivElement>) {
-    // cell.highlighted = false;
     removeHighlightCell(cell);
   }
 
@@ -25,6 +27,9 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
     (e: React.DragEvent<HTMLDivElement>) => {
       if (!cell.highlighted) {
         setHighlightCell(cell);
+        if (!isDraggingStore) {
+          setIsDragging(true);
+        }
       }
     },
     300
@@ -35,6 +40,7 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
     setShipToCell(cell);
     removeHighlightCell(cell);
     setDraggingShip(null);
+    setIsDragging(false);
   }
   return (
     <div
@@ -54,7 +60,7 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
       onDrop={(e) => {
         onDropHandler(e);
       }}
-    ></div>
+    />
   );
 };
 
