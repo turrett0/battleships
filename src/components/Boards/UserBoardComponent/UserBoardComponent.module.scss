@@ -1,11 +1,10 @@
 .container {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
-  gap: 20px 0;
+  width: 23rem;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-drag: none;
@@ -14,10 +13,6 @@
 }
 
 .board {
-  width: 60%;
-  height: 90%;
-  height: 350px;
-  width: 350px;
   display: grid;
   grid-template: repeat(10, 2rem) / repeat(10, 2rem);
   user-select: none;

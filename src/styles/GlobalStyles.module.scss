@@ -3,6 +3,7 @@ $positiveColor: green;
 $negativeColor: red;
 $mainUnsetColor: gray;
 $mainBorderColor: rgba($mainUnsetColor, 0.015);
+$cellColor: rgb(116 119 183 / 30%);
 
 *,
 *::before,
@@ -20,7 +21,8 @@ $mainBorderColor: rgba($mainUnsetColor, 0.015);
 
 .container {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
   margin: 0 auto;
   margin-top: 1rem;
   gap: 30px;

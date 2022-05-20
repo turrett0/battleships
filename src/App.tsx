@@ -8,10 +8,10 @@ const App: FC = () => {
   return (
     <div className={styles.app}>
       <div className={styles.container}>
+        <Dock />
         <UserBoardComponent />
       </div>
 
-      <Dock />
       {/* <ShipsHealthBox /> */}
     </div>
   );

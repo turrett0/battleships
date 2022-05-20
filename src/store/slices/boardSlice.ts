@@ -7,13 +7,14 @@ import {
   setHighlightCell,
   setShipToCell,
   setIsDragging,
+  moveBoardElement,
+  removeItemFromDock,
 } from "./sliceActions";
 
 export type BoardState = {
   userBoard: IBoard;
   partnerBoard: IBoard | null;
   draggingShip: IShip | null;
-  test: string;
   dock: IShip[];
   initDock: IShip[][];
   isCanDrag: boolean;
@@ -25,7 +26,6 @@ const initialState: BoardState = {
   partnerBoard: null,
   draggingShip: null,
   isDragging: false,
-  test: "",
   dock: [],
   isCanDrag: true,
   initDock: [
@@ -54,6 +54,8 @@ const boardSlice = createSlice({
     setHighlightCell,
     removeHighlightCell,
     setIsDragging,
+    moveBoardElement,
+    removeItemFromDock,
   },
 });
 

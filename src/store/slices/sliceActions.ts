@@ -52,8 +52,6 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
       x = x - 1;
     }
 
-    //Implement if possible to place item or not
-
     // console.log(x, endX);
     if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
       for (let i = x; i <= endX; i++) {
@@ -72,7 +70,18 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
           ),
         };
       }
-      state.dock.push(state.draggingShip);
+      state.dock.push({
+        ...createShip(
+          state.draggingShip.size,
+          {
+            startX: x,
+            endX: x + state.draggingShip.health - 1,
+            startY: y,
+            endY: y,
+          },
+          state.draggingShip.id
+        ),
+      });
     }
   }
 };
@@ -122,13 +131,35 @@ export const setIsDragging: CaseReducer<BoardState, PayloadAction<boolean>> = (
   state.isDragging = action.payload;
 };
 
-//remov
-// export const removeShipFromInitDock: CaseReducer<
-//   BoardState,
-//   PayloadAction<IShip["id"]>
-// > = (state, action) => {
-//   state.initDock = state.initDock.map((port) => {
-//     return port.filter((ship) => ship.id !== action.payload);
-//   });
-// };
-// //remove
+export const moveBoardElement: CaseReducer<BoardState, PayloadAction<IShip>> = (
+  state,
+  action
+) => {
+  const currentShip = state.dock.find((ship) => ship.id === action.payload.id);
+  if (currentShip) {
+    state.draggingShip = currentShip;
+    let startX = action.payload.coords?.startX;
+    let endX = action.payload.coords?.endX;
+    let y = action.payload.coords?.startY;
+
+    if (startX && endX && y) {
+      for (let i = startX; i <= endX; i++) {
+        const element = state.userBoard.cells[y][i];
+        element.ship = null;
+      }
+    }
+    state.dock = state.dock.filter((ship) => ship.id !== action.payload.id);
+  }
+};
+
+export const removeItemFromDock: CaseReducer<
+  BoardState,
+  PayloadAction<IShip>
+> = (state, action) => {
+  state.dock.filter((ship) => ship.id !== action.payload.id);
+};
+
+export const returnShip: CaseReducer<BoardState, PayloadAction<IShip>> = (
+  state,
+  action
+) => {};
