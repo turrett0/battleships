@@ -7,7 +7,7 @@ import {BoardState} from "./boardSlice";
 export const setDraggingShip: CaseReducer<
   BoardState,
   PayloadAction<IShip | null>
-> = (state, action) => {
+> = (state, action): void => {
   state.draggingShip = action.payload;
 };
 
@@ -24,6 +24,7 @@ const isCanPlace = (
     }
 
     if (
+      x + ship.health - 1 > 9 ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index]?.ship ||
       board.cells[y - 1 < 0 ? 0 : y - 1][index]?.ship ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index + 1]?.ship ||
@@ -41,7 +42,7 @@ const isCanPlace = (
 export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   state,
   action
-) => {
+): void => {
   if (state.draggingShip) {
     let x = action.payload.x;
     let y = action.payload.y;
@@ -52,7 +53,6 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
       x = x - 1;
     }
 
-    // console.log(x, endX);
     if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
       for (let i = x; i <= endX; i++) {
         const element = state.userBoard.cells[y][i];
@@ -89,7 +89,7 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
 export const setHighlightCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   state,
   action
-) => {
+): void => {
   if (state.draggingShip) {
     let x = action.payload.x;
     let y = action.payload.y;
@@ -101,14 +101,19 @@ export const setHighlightCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
     }
     for (let i = x; i <= endX; i++) {
       const element = state.userBoard.cells[y][i];
-      element.highlighted = true;
+      if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
+        element.highlighted = true;
+      } else {
+        element.isCanNotPlace = true;
+      }
     }
   }
 };
+
 export const removeHighlightCell: CaseReducer<
   BoardState,
   PayloadAction<ICell>
-> = (state, action) => {
+> = (state, action): void => {
   if (state.draggingShip) {
     let x = action.payload.x;
     let y = action.payload.y;
@@ -120,6 +125,7 @@ export const removeHighlightCell: CaseReducer<
     for (let i = 0; i <= endX; i++) {
       const element = state.userBoard.cells[y][i];
       element.highlighted = false;
+      element.isCanNotPlace = false;
     }
   }
 };
@@ -127,22 +133,24 @@ export const removeHighlightCell: CaseReducer<
 export const setIsDragging: CaseReducer<BoardState, PayloadAction<boolean>> = (
   state,
   action
-) => {
+): void => {
   state.isDragging = action.payload;
 };
 
 export const moveBoardElement: CaseReducer<BoardState, PayloadAction<IShip>> = (
   state,
   action
-) => {
+): void => {
   const currentShip = state.dock.find((ship) => ship.id === action.payload.id);
   if (currentShip) {
     state.draggingShip = currentShip;
     let startX = action.payload.coords?.startX;
     let endX = action.payload.coords?.endX;
     let y = action.payload.coords?.startY;
-
-    if (startX && endX && y) {
+    console.log("startX:", startX);
+    console.log("endX:", endX);
+    console.log("Y:", y);
+    if (startX !== undefined && endX !== undefined && y !== undefined) {
       for (let i = startX; i <= endX; i++) {
         const element = state.userBoard.cells[y][i];
         element.ship = null;
@@ -159,7 +167,29 @@ export const removeItemFromDock: CaseReducer<
   state.dock.filter((ship) => ship.id !== action.payload.id);
 };
 
-export const returnShip: CaseReducer<BoardState, PayloadAction<IShip>> = (
+export const clearDock: CaseReducer<BoardState> = (state): void => {
+  state.dock = [];
+};
+
+export const setUserName: CaseReducer<BoardState, PayloadAction<string>> = (
+  state,
+  action
+): void => {
+  state.userBoard.username = action.payload;
+};
+
+export const rotateElement: CaseReducer<BoardState, PayloadAction<string>> = (
   state,
   action
 ) => {};
+
+// const findCurrentShip = (dock: BoardState["dock"], id: IShip["id"]) => {
+//   return dock.find((ship) => ship.id === id);
+// };
+
+export const setMouseOverGrid: CaseReducer<
+  BoardState,
+  PayloadAction<boolean>
+> = (state, action) => {
+  state.isHiddenDraggableElement = action.payload;
+};

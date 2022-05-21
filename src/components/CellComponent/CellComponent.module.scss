@@ -3,6 +3,7 @@
 .cell {
   border: 1px solid $cellColor;
   cursor: pointer;
+  user-select: none;
 
   @media (prefers-color-scheme: dark) {
     & {
@@ -55,8 +56,13 @@
 }
 
 .selected {
-  border: 1px solid green;
-  background-color: rgba(green, 0.15);
+  border: 1px solid $positiveColor;
+  background-color: rgba($positiveColor, 0.15);
+}
+
+.canNotPlace {
+  border: 1px solid $negativeColor;
+  background-color: rgba($negativeColor, 0.15);
 }
 
 .setted {

@@ -9,6 +9,7 @@ interface Props {
 }
 
 const ShipComponent: FC<Props> = ({ship}) => {
+  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const {setDraggingShip, setIsDragging} = useActions();
   const dock = useAppSelector(({board}) => board.dock);
@@ -16,6 +17,9 @@ const ShipComponent: FC<Props> = ({ship}) => {
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
   const [isDraggingState, setIsDraggingState] = useState<boolean>(false);
   const findCurrent = dock.find((dockShip) => dockShip.id === ship.id);
+  const isHiddenDraggableElement = useAppSelector(
+    ({board}) => board.isHiddenDraggableElement
+  );
 
   useEffect(() => {
     console.log("is setted:", isSetted);
@@ -54,13 +58,20 @@ const ShipComponent: FC<Props> = ({ship}) => {
     }
   }
 
+  useEffect(() => {
+    console.log("isHiddenDraggableElement", isHiddenDraggableElement);
+  }, [isHiddenDraggableElement]);
+
   return (
     <div
       onDragStart={(e) => onDragStartHandler(e, ship)}
       onDragEnd={(e) => {
         onDragEndHandler(e);
       }}
-      draggable={true}
+      // onMouseMove={(e) => {
+      //   console.log(e.clientX, e.clientY);
+      // }}
+      draggable={!isGameInProgress}
       className={`${styles.ship} ${styles[ship.size]} ${
         isDraggingState ? styles.candrag : ""
       }  ${isSetted ? styles.setted : ""}`}

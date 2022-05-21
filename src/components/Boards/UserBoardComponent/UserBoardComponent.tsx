@@ -1,6 +1,7 @@
 import {nanoid} from "nanoid";
 import {FC, Fragment} from "react";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
+import useActions from "../../../hooks/useActions";
 import {roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
 import CellComponent from "../../CellComponent/CellComponent";
@@ -10,6 +11,10 @@ import styles from "./UserBoardComponent.module.scss";
 
 const UserBoardComponent: FC = () => {
   const board = useAppSelector((app) => app.board.userBoard);
+  const isHiddenDraggableElement = useAppSelector(
+    ({board}) => board.isHiddenDraggableElement
+  );
+  const {setMouseOverGrid} = useActions();
 
   const onClickHandler = (target: ICell) => {
     console.log(target);
@@ -33,7 +38,22 @@ const UserBoardComponent: FC = () => {
           role={"vertical"}
           key={nanoid()} //set every render
         />
-        <div className={styles.board} draggable={false}>
+        <div
+          className={styles.board}
+          draggable={false}
+          onDragEnter={(e) => {
+            if (!isHiddenDraggableElement) {
+              setMouseOverGrid(true);
+              console.log("enter grid");
+              console.log(e.target, e.currentTarget);
+            }
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            console.log("leave");
+            // setMouseOverGrid(false);
+          }}
+        >
           {board.cells.map((row, index) => (
             <Fragment key={index}>
               {row.map((cell) => (

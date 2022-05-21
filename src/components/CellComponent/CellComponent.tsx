@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import {FC} from "react";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
 import {useThrottle} from "../../hooks/useThrottle";
@@ -19,7 +19,9 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
     removeHighlightCell,
     moveBoardElement,
   } = useActions();
-  const isDraggingStore = useAppSelector(({board}) => board.isDragging);
+  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
+  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
+
   function onDragLeaveHandler(e: React.DragEvent<HTMLDivElement>) {
     removeHighlightCell(cell);
   }
@@ -29,7 +31,7 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
       if (!cell.highlighted) {
         setHighlightCell(cell);
 
-        if (!isDraggingStore) {
+        if (!isDraggingGlobal) {
           setIsDragging(true);
         }
       }
@@ -46,12 +48,12 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
   }
   return (
     <div
-      draggable={cell.ship ? true : false}
+      draggable={!isGameInProgress && cell.ship ? true : false}
       className={`${styles.cell} ${
         cell.isShooted ? (cell.ship ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${
-        cell.ship ? styles.setted : ""
-      }`}
+        cell.isCanNotPlace ? styles.canNotPlace : ""
+      } ${cell.ship ? styles.setted : ""}`}
       onDragStart={(e) => {
         let div = document.createElement("div");
         e.dataTransfer.setDragImage(div, 0, 0);
@@ -60,14 +62,6 @@ const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
           moveBoardElement(cell.ship);
         }
       }}
-      // onMouseDown={(e) => {
-      //   console.log("down", e);
-      //   setIsDraggable(true);
-      // }}
-      // onMouseUp={(e) => {
-      //   console.log("up", e);
-      //   setIsDraggable(false);
-      // }}
       onClick={() => onClickHandler(cell)}
       onDragLeave={(e) => {
         onDragLeaveHandler(e);

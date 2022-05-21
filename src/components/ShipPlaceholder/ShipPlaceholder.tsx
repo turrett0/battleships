@@ -1,5 +1,5 @@
 import React, {FC} from "react";
-import {IShip} from "../../../models/Ship";
+import {IShip} from "../../models/Ship";
 import styles from "./ShipPlaceholder.module.scss";
 
 interface Props {

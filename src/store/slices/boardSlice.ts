@@ -9,6 +9,10 @@ import {
   setIsDragging,
   moveBoardElement,
   removeItemFromDock,
+  clearDock,
+  rotateElement,
+  setUserName,
+  setMouseOverGrid,
 } from "./sliceActions";
 
 export type BoardState = {
@@ -19,6 +23,8 @@ export type BoardState = {
   initDock: IShip[][];
   isCanDrag: boolean;
   isDragging: boolean;
+  isGameInProgress: boolean;
+  isHiddenDraggableElement: boolean;
 };
 
 const initialState: BoardState = {
@@ -28,6 +34,8 @@ const initialState: BoardState = {
   isDragging: false,
   dock: [],
   isCanDrag: true,
+  isGameInProgress: false,
+  isHiddenDraggableElement: false,
   initDock: [
     [
       createShip(shipSizes.SMALL, null),
@@ -56,6 +64,10 @@ const boardSlice = createSlice({
     setIsDragging,
     moveBoardElement,
     removeItemFromDock,
+    clearDock,
+    rotateElement,
+    setUserName,
+    setMouseOverGrid,
   },
 });
 

@@ -2,7 +2,7 @@ import {FC} from "react";
 import styles from "./ShipsHealthBox.module.scss";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 
-import ShipPlaceholder from "../Ship/ShipPlaceholder/ShipPlaceholder";
+import ShipPlaceholder from "../ShipPlaceholder/ShipPlaceholder";
 
 const ShipsHealthBox: FC = () => {
   const dock = useAppSelector(({board}) => board.dock);
