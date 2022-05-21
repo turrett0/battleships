@@ -11,14 +11,9 @@ import styles from "./UserBoardComponent.module.scss";
 
 const UserBoardComponent: FC = () => {
   const board = useAppSelector((app) => app.board.userBoard);
-  const isHiddenDraggableElement = useAppSelector(
-    ({board}) => board.isHiddenDraggableElement
-  );
-  const {setMouseOverGrid} = useActions();
-
-  const onClickHandler = (target: ICell) => {
-    console.log(target);
-  };
+  const {setIsHiddenDraggableElement} = useActions();
+  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
+  const draggingElement = useAppSelector(({board}) => board.draggingShip);
 
   return (
     <div>
@@ -41,27 +36,22 @@ const UserBoardComponent: FC = () => {
         <div
           className={styles.board}
           draggable={false}
-          onDragEnter={(e) => {
-            if (!isHiddenDraggableElement) {
-              setMouseOverGrid(true);
-              console.log("enter grid");
-              console.log(e.target, e.currentTarget);
+          onMouseEnter={() => {
+            if (isDraggingGlobal && draggingElement) {
+              setIsHiddenDraggableElement(true);
             }
           }}
-          onDragLeave={(e) => {
-            e.preventDefault();
-            console.log("leave");
-            // setMouseOverGrid(false);
+          onMouseLeave={() => {
+            if (isDraggingGlobal && draggingElement) {
+              console.log("leave");
+              setIsHiddenDraggableElement(false);
+            }
           }}
         >
           {board.cells.map((row, index) => (
             <Fragment key={index}>
               {row.map((cell) => (
-                <CellComponent
-                  cell={cell}
-                  onClickHandler={onClickHandler}
-                  key={cell.id}
-                />
+                <CellComponent cell={cell} key={cell.id} />
               ))}
             </Fragment>
           ))}

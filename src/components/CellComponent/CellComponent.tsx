@@ -1,80 +1,67 @@
 import {FC} from "react";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
-import {useThrottle} from "../../hooks/useThrottle";
 import {ICell} from "../../models/Cell";
 import styles from "./CellComponent.module.scss";
 
 interface Props {
   cell: ICell;
-  onClickHandler: (target: ICell) => void;
 }
 
-const CellComponent: FC<Props> = ({cell, onClickHandler}) => {
+const CellComponent: FC<Props> = ({cell}) => {
+  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
+  const draggingElement = useAppSelector(({board}) => board.draggingShip);
   const {
     setShipToCell,
-    setDraggingShip,
     setHighlightCell,
     setIsDragging,
     removeHighlightCell,
-    moveBoardElement,
+    changeElementPosition,
+    setDraggingShip,
+    rotateElement,
   } = useActions();
-  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
-  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
 
-  function onDragLeaveHandler(e: React.DragEvent<HTMLDivElement>) {
-    removeHighlightCell(cell);
-  }
-
-  const onDragOverHandler = useThrottle(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      if (!cell.highlighted) {
-        setHighlightCell(cell);
-
-        if (!isDraggingGlobal) {
-          setIsDragging(true);
-        }
-      }
-    },
-    300
-  );
-
-  function onDropHandler(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
+  const onMouseUpHandler = () => {
+    if (!draggingElement) {
+      removeHighlightCell(cell);
+      setDraggingShip(null);
+    }
     setShipToCell(cell);
-    removeHighlightCell(cell);
-    setDraggingShip(null);
-    setIsDragging(false);
-  }
+  };
+
   return (
     <div
-      draggable={!isGameInProgress && cell.ship ? true : false}
       className={`${styles.cell} ${
         cell.isShooted ? (cell.ship ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${
         cell.isCanNotPlace ? styles.canNotPlace : ""
       } ${cell.ship ? styles.setted : ""}`}
-      onDragStart={(e) => {
-        let div = document.createElement("div");
-        e.dataTransfer.setDragImage(div, 0, 0);
-        if (cell.ship) {
-          setIsDragging(true);
-          moveBoardElement(cell.ship);
+      onMouseOver={() => {
+        if (!cell.highlighted && isDraggingGlobal) {
+          setHighlightCell(cell);
         }
       }}
-      onClick={() => onClickHandler(cell)}
-      onDragLeave={(e) => {
-        onDragLeaveHandler(e);
+      onMouseLeave={() => {
+        if (isDraggingGlobal) {
+          removeHighlightCell(cell);
+        }
       }}
-      onDragEnd={() => {
-        setIsDragging(false);
-      }}
-      onDragOver={(e) => {
-        e.preventDefault();
-        onDragOverHandler(e);
-      }}
-      onDrop={(e) => {
-        onDropHandler(e);
+      onMouseUp={onMouseUpHandler}
+      onMouseDown={() => {
+        console.log(cell.ship);
+        document.addEventListener("keydown", (keyEvent) => {
+          console.log("key pressed", keyEvent.key);
+          if (cell.ship) {
+            rotateElement(cell);
+          }
+        });
+        // setIsMouseDown(true);
+        if (cell.ship && !isDraggingGlobal) {
+          //replace placed element
+          setIsDragging(true);
+          changeElementPosition(cell.ship);
+          setHighlightCell(cell);
+        }
       }}
     />
   );

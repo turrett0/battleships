@@ -3,12 +3,15 @@
 .ship {
   width: 1rem;
   height: 0.5rem;
-  user-select: none;
 
   background-color: $shipColor;
   @media (prefers-color-scheme: dark) {
     background-color: white;
   }
+}
+
+.hidden {
+  opacity: 0;
 }
 
 .unset {

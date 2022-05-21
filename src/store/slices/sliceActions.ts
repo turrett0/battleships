@@ -82,6 +82,11 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
           state.draggingShip.id
         ),
       });
+      state.isDragging = false;
+      state.isHiddenDraggableElement = false;
+      for (let i = x; i < x + state.draggingShip.health; i++) {
+        state.userBoard.cells[y][i].highlighted = false;
+      }
     }
   }
 };
@@ -137,19 +142,17 @@ export const setIsDragging: CaseReducer<BoardState, PayloadAction<boolean>> = (
   state.isDragging = action.payload;
 };
 
-export const moveBoardElement: CaseReducer<BoardState, PayloadAction<IShip>> = (
-  state,
-  action
-): void => {
+export const changeElementPosition: CaseReducer<
+  BoardState,
+  PayloadAction<IShip>
+> = (state, action): void => {
+  state.isHiddenDraggableElement = true;
   const currentShip = state.dock.find((ship) => ship.id === action.payload.id);
   if (currentShip) {
     state.draggingShip = currentShip;
     let startX = action.payload.coords?.startX;
     let endX = action.payload.coords?.endX;
     let y = action.payload.coords?.startY;
-    console.log("startX:", startX);
-    console.log("endX:", endX);
-    console.log("Y:", y);
     if (startX !== undefined && endX !== undefined && y !== undefined) {
       for (let i = startX; i <= endX; i++) {
         const element = state.userBoard.cells[y][i];
@@ -167,10 +170,6 @@ export const removeItemFromDock: CaseReducer<
   state.dock.filter((ship) => ship.id !== action.payload.id);
 };
 
-export const clearDock: CaseReducer<BoardState> = (state): void => {
-  state.dock = [];
-};
-
 export const setUserName: CaseReducer<BoardState, PayloadAction<string>> = (
   state,
   action
@@ -178,16 +177,12 @@ export const setUserName: CaseReducer<BoardState, PayloadAction<string>> = (
   state.userBoard.username = action.payload;
 };
 
-export const rotateElement: CaseReducer<BoardState, PayloadAction<string>> = (
+export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
   state,
   action
 ) => {};
 
-// const findCurrentShip = (dock: BoardState["dock"], id: IShip["id"]) => {
-//   return dock.find((ship) => ship.id === id);
-// };
-
-export const setMouseOverGrid: CaseReducer<
+export const setIsHiddenDraggableElement: CaseReducer<
   BoardState,
   PayloadAction<boolean>
 > = (state, action) => {
