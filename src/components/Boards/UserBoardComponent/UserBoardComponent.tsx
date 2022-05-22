@@ -1,5 +1,5 @@
 import {nanoid} from "nanoid";
-import {FC, Fragment} from "react";
+import {FC, Fragment, useCallback, useEffect, useRef, useState} from "react";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
 import {roles} from "../../../models/Board";
@@ -11,9 +11,38 @@ import styles from "./UserBoardComponent.module.scss";
 
 const UserBoardComponent: FC = () => {
   const board = useAppSelector((app) => app.board.userBoard);
-  const {setIsHiddenDraggableElement} = useActions();
+  const {
+    setIsHiddenDraggableElement,
+    changeElementPosition,
+    setIsDragging,
+    setDraggingShip,
+  } = useActions();
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
+  const boardRef = useRef<HTMLDivElement>(null);
+
+  const [cell, setCell] = useState<ICell | null>(null);
+
+  const mouseMoveHandler = useCallback(() => {
+    if (cell && cell.ship && !isDraggingGlobal) {
+      if (!isDraggingGlobal) {
+        setIsDragging(true);
+      }
+      setDraggingShip(cell.ship);
+      changeElementPosition(cell.ship);
+    }
+  }, [cell, isDraggingGlobal]);
+
+  useEffect(() => {
+    if (boardRef.current && cell) {
+      boardRef.current.addEventListener("mousemove", mouseMoveHandler);
+    }
+    return () => {
+      if (boardRef.current) {
+        boardRef.current.removeEventListener("mousemove", mouseMoveHandler);
+      }
+    };
+  }, [mouseMoveHandler, cell]);
 
   return (
     <div>
@@ -34,6 +63,7 @@ const UserBoardComponent: FC = () => {
           key={nanoid()} //set every render
         />
         <div
+          ref={boardRef}
           className={styles.board}
           draggable={false}
           onMouseEnter={() => {
@@ -51,7 +81,7 @@ const UserBoardComponent: FC = () => {
           {board.cells.map((row, index) => (
             <Fragment key={index}>
               {row.map((cell) => (
-                <CellComponent cell={cell} key={cell.id} />
+                <CellComponent setCell={setCell} cell={cell} key={cell.id} />
               ))}
             </Fragment>
           ))}

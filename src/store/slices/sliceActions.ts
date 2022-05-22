@@ -8,6 +8,7 @@ export const setDraggingShip: CaseReducer<
   BoardState,
   PayloadAction<IShip | null>
 > = (state, action): void => {
+  console.log(state.dock);
   state.draggingShip = action.payload;
 };
 
@@ -95,7 +96,9 @@ export const setHighlightCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   state,
   action
 ): void => {
+  console.log("start highlight...");
   if (state.draggingShip) {
+    console.log("has ship...");
     let x = action.payload.x;
     let y = action.payload.y;
     let endX = x + state.draggingShip.health - 1;
@@ -107,6 +110,7 @@ export const setHighlightCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
     for (let i = x; i <= endX; i++) {
       const element = state.userBoard.cells[y][i];
       if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
+        console.log(y, i);
         element.highlighted = true;
       } else {
         element.isCanNotPlace = true;
@@ -156,6 +160,7 @@ export const changeElementPosition: CaseReducer<
     if (startX !== undefined && endX !== undefined && y !== undefined) {
       for (let i = startX; i <= endX; i++) {
         const element = state.userBoard.cells[y][i];
+        element.highlighted = true;
         element.ship = null;
       }
     }

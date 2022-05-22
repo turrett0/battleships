@@ -6,26 +6,22 @@ import styles from "./CellComponent.module.scss";
 
 interface Props {
   cell: ICell;
+  setCell: (cell: ICell | null) => void;
 }
 
-const CellComponent: FC<Props> = ({cell}) => {
+const CellComponent: FC<Props> = ({cell, setCell}) => {
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
-  const draggingElement = useAppSelector(({board}) => board.draggingShip);
-  const {
-    setShipToCell,
-    setHighlightCell,
-    setIsDragging,
-    removeHighlightCell,
-    changeElementPosition,
-    setDraggingShip,
-    rotateElement,
-  } = useActions();
+  const {setShipToCell, setHighlightCell, removeHighlightCell} = useActions();
+
+  const onMouseDownHandler = () => {
+    // if (cell.ship) {
+    //   rotateElement(cell);
+    // }
+    setCell(cell);
+  };
 
   const onMouseUpHandler = () => {
-    if (!draggingElement) {
-      removeHighlightCell(cell);
-      setDraggingShip(null);
-    }
+    setCell(cell);
     setShipToCell(cell);
   };
 
@@ -47,22 +43,7 @@ const CellComponent: FC<Props> = ({cell}) => {
         }
       }}
       onMouseUp={onMouseUpHandler}
-      onMouseDown={() => {
-        console.log(cell.ship);
-        document.addEventListener("keydown", (keyEvent) => {
-          console.log("key pressed", keyEvent.key);
-          if (cell.ship) {
-            rotateElement(cell);
-          }
-        });
-        // setIsMouseDown(true);
-        if (cell.ship && !isDraggingGlobal) {
-          //replace placed element
-          setIsDragging(true);
-          changeElementPosition(cell.ship);
-          setHighlightCell(cell);
-        }
-      }}
+      onMouseDown={onMouseDownHandler}
     />
   );
 };
