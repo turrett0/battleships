@@ -45,7 +45,7 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
       onMouseUp={onMouseUpHandler}
       onMouseDown={() => {
         setCell(cell);
-        console.log(cell);
+        // console.log(cell);
       }}
     />
   );

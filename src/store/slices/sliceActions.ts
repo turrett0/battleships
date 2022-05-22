@@ -24,8 +24,21 @@ const isCanPlace = (
     }
 
     if (
-      y + ship.health - 1 > 9 ||
-      x + ship.health - 1 > 9 ||
+      ship.coords &&
+      ship.coords.startX === ship.coords.endX &&
+      y + ship.health - 1 > 9
+    )
+      return false;
+    // if(ship.coords && )
+    if (!ship.coords && x + ship.health - 1 > 9) return false;
+    if (
+      ship.coords &&
+      ship.coords.startX !== ship.coords.endX &&
+      x + ship.health - 1 > 9
+    )
+      return false;
+
+    if (
       board.cells[y - 1 < 0 ? 0 : y - 1][index]?.ship ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index + 1]?.ship ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index - 1]?.ship ||
@@ -199,73 +212,76 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
   state,
   action
 ) => {
-  const currentShip: IShip = state.initDock.reduce((acc, port) => {
-    let curr = port.find((ship) => ship.id === action.payload?.ship?.id);
-    if (curr) {
-      acc = {...curr, coords: action.payload.ship?.coords || null};
-      return acc;
-    }
-    return acc;
-  }, {} as IShip);
+  const currentShip: IShip = state.dock.find(
+    (ship) => ship.id === action.payload.ship?.id
+  ) as IShip;
 
-  const coords = currentShip.coords;
-  const health = currentShip.health;
-  if (
-    coords &&
-    health &&
-    isCanPlace(state.userBoard, action.payload.x, action.payload.y, currentShip)
-  ) {
-    const newYCoords = {
-      startX: coords.startX,
-      endX: coords.startX,
-      startY: coords.startY,
-      endY: coords.startY + health - 1,
+  const {currentAxis, secondAxisStart, secondAxisEnd} = getValidCoords(
+    action.payload,
+    currentShip
+  );
+  const x = currentShip.coords?.startX as number;
+  const y = currentShip.coords?.startY as number;
+  const currentAxisStart = currentAxis ? x : y;
+  const currentAxisEnd = currentAxis
+    ? x + currentShip.health - 1
+    : y + currentShip.health - 1;
+
+  let coords = {} as IShip["coords"];
+
+  if (!currentAxis) {
+    coords = {
+      startX: x,
+      endX: x + currentShip.health - 1,
+      startY: y,
+      endY: y,
     };
-    const newXCoords = {
-      startX: coords.startX,
-      endX: coords.startX + health - 1,
-      startY: coords.startY,
-      endY: coords.startY,
+  } else {
+    coords = {
+      startX: x,
+      endX: x,
+      startY: y,
+      endY: y + 1 + currentShip.health - 1,
     };
-
-    let newShipElement: IShip = {} as IShip;
-
-    const isVertical = coords.startX !== coords.endX;
-
-    for (let x = coords.startX; x < coords.startX + health; x++) {
-      let element = state.userBoard.cells[coords.startY][x];
-      if (isVertical) {
-        element.ship = null;
-      } else {
-        newShipElement = {
-          ...currentShip,
-          coords: newXCoords,
-        };
-        element.ship = {
-          ...createShip(shipSizes.SMALL, newXCoords, currentShip.id),
-        };
-      }
-    }
-    for (let y = coords.startY; y < coords.startY + health; y++) {
-      const element = state.userBoard.cells[y][coords.startX];
-      if (isVertical) {
-        newShipElement = {
-          ...currentShip,
-          coords: newYCoords,
-        };
-        element.ship = {
-          ...createShip(shipSizes.SMALL, newYCoords, currentShip.id),
-        };
-      } else {
-        if (y !== coords.startY) {
-          element.ship = null;
-        }
-      }
-    }
-    state.dock = state.dock.map((ship) =>
-      ship.id === currentShip.id ? newShipElement : ship
-    );
   }
+  if (y + currentShip.health > 9) {
+    return;
+  }
+
+  for (let index = y + 1; index <= y + currentShip.health; index++) {
+    if (
+      state.userBoard.cells[index][x].ship &&
+      state.userBoard.cells[index][x].ship?.id !== currentShip.id
+    ) {
+      return;
+    }
+  }
+  for (let index = x; index < x + currentShip.health; index++) {
+    if (
+      state.userBoard.cells[y][index].ship &&
+      state.userBoard.cells[y][index].ship?.id !== currentShip.id
+    ) {
+      return;
+    }
+  }
+
+  for (let j = currentAxisStart; j <= currentAxisEnd; j++) {
+    let element = currentAxis
+      ? state.userBoard.cells[y][j]
+      : state.userBoard.cells[j][x];
+    element.ship = null;
+  }
+  for (let i = secondAxisStart; i <= secondAxisEnd; i++) {
+    let element2 = !currentAxis
+      ? state.userBoard.cells[y][i]
+      : state.userBoard.cells[i][x];
+    element2.ship = {
+      ...createShip(shipSizes.SMALL, coords, currentShip.id),
+    };
+  }
+  state.dock = state.dock.map((ship) =>
+    ship.id === currentShip.id ? {...currentShip, coords} : ship
+  );
 };
 
 export const setIsHiddenDraggableElement: CaseReducer<
@@ -283,7 +299,6 @@ const getValidCoords = (cell: ICell, draggingElement: IShip) => {
   if (endY > 9) {
     endY = 9;
   }
-
   if (endX > 9) {
     endX = 9;
   }
@@ -293,11 +308,15 @@ const getValidCoords = (cell: ICell, draggingElement: IShip) => {
     draggingElement.coords?.startX !== draggingElement.coords?.endX;
   const currentAxisStart = currentAxis ? x : y;
   const currentAxisEnd = currentAxis ? endX : endY;
+  const secondAxisStart = currentAxis ? y : x;
+  const secondAxisEnd = currentAxis ? endY : endX;
 
   return {
     currentAxis,
     currentAxisStart,
     currentAxisEnd,
+    secondAxisStart,
+    secondAxisEnd,
     x,
     y,
     endX,
