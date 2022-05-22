@@ -4,7 +4,7 @@
   width: 1rem;
   height: 0.5rem;
 
-  background-color: $shipColor;
+  @include shipAppear;
   @media (prefers-color-scheme: dark) {
     background-color: white;
   }
@@ -12,11 +12,6 @@
 
 .hidden {
   opacity: 0;
-}
-
-.unset {
-  border: 2px solid #00f;
-  background-color: rgba(0, 0, 255, 0.05);
 }
 
 .candrag {

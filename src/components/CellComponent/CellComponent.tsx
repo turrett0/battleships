@@ -11,18 +11,18 @@ interface Props {
 
 const CellComponent: FC<Props> = ({cell, setCell}) => {
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
-  const {setShipToCell, setHighlightCell, removeHighlightCell} = useActions();
-
-  const onMouseDownHandler = () => {
-    // if (cell.ship) {
-    //   rotateElement(cell);
-    // }
-    setCell(cell);
-  };
+  const {setShipToCell, setHighlightCell, removeHighlightCell, rotateElement} =
+    useActions();
 
   const onMouseUpHandler = () => {
-    setCell(cell);
-    setShipToCell(cell);
+    setCell(null);
+    if (isDraggingGlobal) {
+      setShipToCell(cell);
+    }
+
+    if (cell.ship) {
+      rotateElement(cell);
+    }
   };
 
   return (
@@ -43,7 +43,7 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
         }
       }}
       onMouseUp={onMouseUpHandler}
-      onMouseDown={onMouseDownHandler}
+      onMouseDown={() => setCell(cell)}
     />
   );
 };

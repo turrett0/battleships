@@ -4,6 +4,13 @@ $negativeColor: red;
 $mainUnsetColor: gray;
 $mainBorderColor: rgba($mainUnsetColor, 0.015);
 $cellColor: rgb(116 119 183 / 30%);
+$mainBorderOpacity: 0.015;
+$mainBorder: 2px solid;
+
+@mixin shipAppear {
+  background-color: rgba($shipColor, $mainBorderOpacity);
+  border: $mainBorder $shipColor;
+}
 
 *,
 *::before,
