@@ -20,7 +20,7 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
       setShipToCell(cell);
     }
 
-    if (cell.ship) {
+    if (cell.ship && !isDraggingGlobal) {
       rotateElement(cell);
     }
   };
@@ -43,7 +43,10 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
         }
       }}
       onMouseUp={onMouseUpHandler}
-      onMouseDown={() => setCell(cell)}
+      onMouseDown={() => {
+        setCell(cell);
+        console.log(cell);
+      }}
     />
   );
 };

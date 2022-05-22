@@ -24,8 +24,8 @@ const isCanPlace = (
     }
 
     if (
+      y + ship.health - 1 > 9 ||
       x + ship.health - 1 > 9 ||
-      board.cells[y + 1 > 9 ? 9 : y + 1][index]?.ship ||
       board.cells[y - 1 < 0 ? 0 : y - 1][index]?.ship ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index + 1]?.ship ||
       board.cells[y + 1 > 9 ? 9 : y + 1][index - 1]?.ship ||
@@ -36,6 +36,7 @@ const isCanPlace = (
       return false;
     }
   }
+  // console.log(true);
   return true;
 };
 
@@ -44,50 +45,66 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   action
 ): void => {
   if (state.draggingShip) {
-    let x = action.payload.x;
-    let y = action.payload.y;
-    let endX = x + state.draggingShip.health - 1;
+    const {x, y, endX, endY} = getValidCoords(
+      action.payload,
+      state.draggingShip
+    );
 
-    if (x + state.draggingShip.health - 1 > 9) {
-      endX = 9;
-      x = x - 1;
-    }
+    if (!isCanPlace(state.userBoard, x, y, state.draggingShip)) return;
 
-    if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
+    const newYCoords = {
+      startX: x,
+      endX: x,
+      startY: y,
+      endY,
+    };
+    const newXCoords = {
+      startX: x,
+      endX: endX,
+      startY: y,
+      endY: y,
+    };
+
+    if (
+      !state.draggingShip.coords ||
+      state.draggingShip.coords?.startX !== state.draggingShip.coords?.endX
+    ) {
       for (let i = x; i <= endX; i++) {
         const element = state.userBoard.cells[y][i];
 
         element.ship = {
-          ...createShip(
-            shipSizes.SMALL,
-            {
-              startX: x,
-              endX: x + state.draggingShip.health - 1,
-              startY: y,
-              endY: y,
-            },
-            state.draggingShip.id
-          ),
+          ...createShip(shipSizes.SMALL, newXCoords, state.draggingShip.id),
         };
+        element.highlighted = false;
       }
+
       state.dock.push({
         ...createShip(
           state.draggingShip.size,
-          {
-            startX: x,
-            endX: x + state.draggingShip.health - 1,
-            startY: y,
-            endY: y,
-          },
+          newXCoords,
           state.draggingShip.id
         ),
       });
-      state.isDragging = false;
-      state.isHiddenDraggableElement = false;
-      for (let i = x; i < x + state.draggingShip.health; i++) {
-        state.userBoard.cells[y][i].highlighted = false;
+    } else {
+      for (let i = y; i <= endY; i++) {
+        const element = state.userBoard.cells[i][x];
+        element.ship = {
+          ...createShip(shipSizes.SMALL, newYCoords, state.draggingShip.id),
+        };
+        element.highlighted = false;
       }
+
+      state.dock.push({
+        ...createShip(
+          state.draggingShip.size,
+          newYCoords,
+          state.draggingShip.id
+        ),
+      });
     }
+
+    state.isDragging = false;
+    state.isHiddenDraggableElement = false;
   }
 };
 
@@ -96,42 +113,16 @@ export const setHighlightCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   action
 ): void => {
   if (state.draggingShip) {
-    let tmpX = state.draggingShip?.coords?.endX;
-    let tmpY = state.draggingShip?.coords?.endY;
-    let x = action.payload.x;
-    let y = action.payload.y;
-    let endX =
-      x +
-      (tmpX
-        ? tmpX - state.draggingShip.health - 1
-        : state.draggingShip.health - 1);
-    let endY =
-      tmpY === undefined || tmpY === y ? y : y + state.draggingShip.health - 1;
-    if (endX > 9) {
-      endX = 9;
-      x = x - 1;
-    }
-    console.log(y, endY);
-    const isCanPlaceTo = isCanPlace(state.userBoard, x, y, state.draggingShip);
+    const {currentAxisStart, currentAxisEnd, currentAxis, x, y} =
+      getValidCoords(action.payload, state.draggingShip);
+    for (let j = currentAxisStart; j <= currentAxisEnd; j++) {
+      let element = currentAxis
+        ? state.userBoard.cells[y][j]
+        : state.userBoard.cells[j][x];
 
-    for (let i = x; i <= endX; i++) {
-      const element = state.userBoard.cells[y][i];
-      if (isCanPlaceTo) {
-        element.highlighted = true;
-      } else {
-        element.isCanNotPlace = true;
-      }
-    }
-    console.log("START Y:", y, "END Y:", endY);
-    console.log("START X:", x, "END X:", endX);
-
-    for (let i = y; i <= endY; i++) {
-      const element = state.userBoard.cells[i][x];
-      if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
-        element.highlighted = true;
-      } else {
-        element.isCanNotPlace = true;
-      }
+      isCanPlace(state.userBoard, x, y, state.draggingShip)
+        ? (element.highlighted = true)
+        : (element.isCanNotPlace = true);
     }
   }
 };
@@ -141,25 +132,11 @@ export const removeHighlightCell: CaseReducer<
   PayloadAction<ICell>
 > = (state, action): void => {
   if (state.draggingShip) {
-    let x = action.payload.x;
-    let y = action.payload.y;
-    let endX = x + state.draggingShip.health - 1;
-    let endY = state.draggingShip.coords?.endY || y;
-
-    if (x + state.draggingShip.health - 1 > 9) {
-      endX = 9;
-      x = x - 1;
-    }
-    for (let i = x; i <= endX; i++) {
-      const element = state.userBoard.cells[y][i];
-      element.highlighted = false;
-      element.isCanNotPlace = false;
-    }
-
-    for (let i = y; i <= endY; i++) {
-      const element = state.userBoard.cells[i][x];
-      element.highlighted = false;
-      element.isCanNotPlace = false;
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        state.userBoard.cells[i][j].highlighted = false;
+        state.userBoard.cells[i][j].isCanNotPlace = false;
+      }
     }
   }
 };
@@ -175,24 +152,21 @@ export const changeElementPosition: CaseReducer<
   BoardState,
   PayloadAction<IShip>
 > = (state, action): void => {
-  state.isHiddenDraggableElement = true;
   const currentShip = state.dock.find((ship) => ship.id === action.payload.id);
   if (currentShip) {
-    state.draggingShip = currentShip;
+    state.draggingShip = {...currentShip, coords: action.payload.coords};
     let startX = action.payload.coords?.startX;
     let endX = action.payload.coords?.endX;
     let startY = action.payload.coords?.startY;
     let endY = action.payload.coords?.endY;
-    let y = action.payload.coords?.startY;
     if (
       startX !== undefined &&
       endX !== undefined &&
-      y !== undefined &&
       startY !== undefined &&
       endY !== undefined
     ) {
-      for (let i = startX; i <= endX; i++) {
-        const element = state.userBoard.cells[y][i];
+      for (let x = startX; x <= endX; x++) {
+        const element = state.userBoard.cells[startY][x];
         element.highlighted = true;
         element.ship = null;
       }
@@ -233,9 +207,14 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
     }
     return acc;
   }, {} as IShip);
+
   const coords = currentShip.coords;
   const health = currentShip.health;
-  if (coords && health && coords.startY + health - 1 <= 9) {
+  if (
+    coords &&
+    health &&
+    isCanPlace(state.userBoard, action.payload.x, action.payload.y, currentShip)
+  ) {
     const newYCoords = {
       startX: coords.startX,
       endX: coords.startX,
@@ -294,4 +273,34 @@ export const setIsHiddenDraggableElement: CaseReducer<
   PayloadAction<boolean>
 > = (state, action) => {
   state.isHiddenDraggableElement = action.payload;
+};
+
+const getValidCoords = (cell: ICell, draggingElement: IShip) => {
+  let x = cell.x ?? (draggingElement.coords?.startX as number);
+  let y = cell.y ?? (draggingElement.coords?.startY as number);
+  let endX = x + draggingElement.health - 1;
+  let endY = y + draggingElement.health - 1;
+  if (endY > 9) {
+    endY = 9;
+  }
+
+  if (endX > 9) {
+    endX = 9;
+  }
+
+  const currentAxis =
+    !draggingElement.coords ||
+    draggingElement.coords?.startX !== draggingElement.coords?.endX;
+  const currentAxisStart = currentAxis ? x : y;
+  const currentAxisEnd = currentAxis ? endX : endY;
+
+  return {
+    currentAxis,
+    currentAxisStart,
+    currentAxisEnd,
+    x,
+    y,
+    endX,
+    endY,
+  };
 };

@@ -34,7 +34,6 @@ const ShipComponent: FC<Props> = ({ship}) => {
       shipRef.current.style.top = 0 + "px";
       setIsDraggingState(false);
       setIsDragging(false);
-      setIsSetted(true);
     }
   };
 
@@ -52,6 +51,14 @@ const ShipComponent: FC<Props> = ({ship}) => {
     }
   }, []);
 
+  console.log();
+
+  useEffect(() => {
+    if (findCurrent || draggingElement?.id === ship.id) {
+      setIsSetted(true);
+    }
+  }, [findCurrent, draggingElement]);
+
   return (
     <div className={` ${styles[ship.size]} ${isSetted ? styles.setted : ""}`}>
       <div
@@ -59,21 +66,16 @@ const ShipComponent: FC<Props> = ({ship}) => {
         onMouseDown={() => {
           if (shipRef.current && !findCurrent) {
             setDraggingShip(ship);
-            setIsSetted(true);
             setIsDraggingState(true);
             setIsDragging(true);
+
             document.addEventListener("mousemove", testHandler);
           }
         }}
         onMouseUp={endDrag}
         className={`${styles.ship} ${styles[ship.size]} ${
           isDraggingState ? styles.candrag : ""
-        }  ${
-          findCurrent ||
-          (isHiddenDraggableElement && draggingElement?.id === ship.id)
-            ? styles.hidden
-            : ""
-        } `}
+        }  ${isSetted ? styles.hidden : ""} `}
       />
     </div>
   );
