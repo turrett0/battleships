@@ -4,7 +4,8 @@ import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
 import {roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
-import CellComponent from "../../CellComponent/CellComponent";
+import CellComponent from "../../Cell/CellComponent";
+import CustomButton from "../../CustomButton/CustomButton";
 import LetterBlock from "../../LetterBlock/LetterBlock";
 
 import styles from "./UserBoardComponent.module.scss";
@@ -17,9 +18,11 @@ const UserBoardComponent: FC = () => {
     setIsDragging,
     setDraggingShip,
   } = useActions();
+  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
   const boardRef = useRef<HTMLDivElement>(null);
+  const dock = useAppSelector(({board}) => board.dock);
 
   const [cell, setCell] = useState<ICell | null>(null);
 
@@ -45,13 +48,29 @@ const UserBoardComponent: FC = () => {
   }, [mouseMoveHandler, cell]);
 
   return (
-    <div>
-      <div className={styles.container}>
-        <span>
-          {board.role === roles.USER
-            ? "Моя Доска"
-            : `Доска пользователя ${board.username}`}
-        </span>
+    <div className={styles.container}>
+      <span>
+        {board.role === roles.USER
+          ? "Моя Доска"
+          : `Доска пользователя ${board.username}`}
+      </span>
+
+      <div
+        ref={boardRef}
+        className={styles.board}
+        draggable={false}
+        onMouseEnter={() => {
+          if (isDraggingGlobal && draggingElement) {
+            setIsHiddenDraggableElement(true);
+          }
+        }}
+        onMouseLeave={() => {
+          if (isDraggingGlobal && draggingElement) {
+            console.log("leave");
+            setIsHiddenDraggableElement(false);
+          }
+        }}
+      >
         <LetterBlock
           content={["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]}
           role={"horizontal"}
@@ -62,31 +81,19 @@ const UserBoardComponent: FC = () => {
           role={"vertical"}
           key={nanoid()} //set every render
         />
-        <div
-          ref={boardRef}
-          className={styles.board}
-          draggable={false}
-          onMouseEnter={() => {
-            if (isDraggingGlobal && draggingElement) {
-              setIsHiddenDraggableElement(true);
-            }
-          }}
-          onMouseLeave={() => {
-            if (isDraggingGlobal && draggingElement) {
-              console.log("leave");
-              setIsHiddenDraggableElement(false);
-            }
-          }}
-        >
-          {board.cells.map((row, index) => (
-            <Fragment key={index}>
-              {row.map((cell) => (
-                <CellComponent setCell={setCell} cell={cell} key={cell.id} />
-              ))}
-            </Fragment>
-          ))}
-        </div>
+        {board.cells.map((row, index) => (
+          <Fragment key={index}>
+            {row.map((cell) => (
+              <CellComponent setCell={setCell} cell={cell} key={cell.id} />
+            ))}
+          </Fragment>
+        ))}
       </div>
+      {!isGameInProgress && (
+        <CustomButton disabled={dock.length !== 10} callback={() => {}}>
+          Начать игру
+        </CustomButton>
+      )}
     </div>
   );
 };

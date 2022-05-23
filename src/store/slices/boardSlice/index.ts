@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IBoard, createBoard, roles} from "../../models/Board";
-import {createShip, IShip, shipSizes} from "../../models/Ship";
+import {turnData} from "../../../api/socketIO/state";
+import {IBoard, createBoard, roles} from "../../../models/Board";
+import {createShip, IShip, shipSizes} from "../../../models/Ship";
 import {
   removeHighlightCell,
   setDraggingShip,
@@ -9,31 +10,33 @@ import {
   setIsDragging,
   changeElementPosition,
   removeItemFromDock,
-  // clearDock,
   rotateElement,
   setUserName,
   setIsHiddenDraggableElement,
-} from "./sliceActions";
+  clearBoard,
+} from "./actions";
 
 export type BoardState = {
   userBoard: IBoard;
-  partnerBoard: IBoard | null;
+  partnerBoard: IBoard;
   draggingShip: IShip | null;
   dock: IShip[];
   initDock: IShip[][];
   isDragging: boolean;
   isGameInProgress: boolean;
   isHiddenDraggableElement: boolean;
+  turnsHistory: turnData[];
 };
 
 const initialState: BoardState = {
   userBoard: createBoard(roles.USER),
-  partnerBoard: null,
+  partnerBoard: createBoard(roles.PARTNER),
   draggingShip: null,
   isDragging: false,
   dock: [],
   isGameInProgress: false,
   isHiddenDraggableElement: false,
+  turnsHistory: [],
   initDock: [
     [
       createShip(shipSizes.SMALL, null),
@@ -62,10 +65,10 @@ const boardSlice = createSlice({
     setIsDragging,
     changeElementPosition,
     removeItemFromDock,
-    // clearDock,
     rotateElement,
     setUserName,
     setIsHiddenDraggableElement,
+    clearBoard,
   },
 });
 

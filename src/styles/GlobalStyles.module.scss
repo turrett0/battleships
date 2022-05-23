@@ -6,6 +6,8 @@ $mainBorderColor: rgba($mainUnsetColor, 0.015);
 $cellColor: rgb(116 119 183 / 30%);
 $mainBorderOpacity: 0.015;
 $mainBorder: 2px solid;
+$defaultColor: #fff;
+$defaultDisabledColor: lightgray;
 
 @mixin shipAppear {
   background-color: rgba($shipColor, $mainBorderOpacity);
@@ -27,6 +29,7 @@ $mainBorder: 2px solid;
 }
 
 .container {
+  max-width: 1200px;
   display: flex;
   justify-content: center;
   align-items: center;

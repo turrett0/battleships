@@ -11,22 +11,19 @@ interface Props {
 const ShipComponent: FC<Props> = ({ship}) => {
   const shipRef = useRef<HTMLDivElement | null>(null);
 
-  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const {setDraggingShip, setIsDragging} = useActions();
   const dock = useAppSelector(({board}) => board.dock);
   const [isSetted, setIsSetted] = useState<boolean>(false);
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
-
   const [isDraggingState, setIsDraggingState] = useState<boolean>(false);
-
   const findCurrent = dock.find((dockShip) => dockShip.id === ship.id);
   const isHiddenDraggableElement = useAppSelector(
     ({board}) => board.isHiddenDraggableElement
   );
 
   const endDrag = () => {
-    document.removeEventListener("mousemove", testHandler);
+    document.removeEventListener("mousemove", mouseMoveHandler);
     if (shipRef.current) {
       setDraggingShip(null);
       shipRef.current.style.position = "relative";
@@ -43,7 +40,7 @@ const ShipComponent: FC<Props> = ({ship}) => {
     }
   }, [isDraggingGlobal]);
 
-  const testHandler = useCallback((e: MouseEvent) => {
+  const mouseMoveHandler = useCallback((e: MouseEvent) => {
     if (shipRef.current) {
       shipRef.current.style.position = "absolute";
       shipRef.current.style.left = e.clientX + "px";
@@ -51,11 +48,11 @@ const ShipComponent: FC<Props> = ({ship}) => {
     }
   }, []);
 
-  console.log();
-
   useEffect(() => {
-    if (findCurrent) {
+    if (findCurrent && draggingElement?.id === ship.id) {
       setIsSetted(true);
+    } else if (!findCurrent) {
+      setIsSetted(false);
     }
   }, [findCurrent, draggingElement]);
 
@@ -72,8 +69,7 @@ const ShipComponent: FC<Props> = ({ship}) => {
             setDraggingShip(ship);
             setIsDraggingState(true);
             setIsDragging(true);
-
-            document.addEventListener("mousemove", testHandler);
+            document.addEventListener("mousemove", mouseMoveHandler);
           }
         }}
         onMouseUp={endDrag}

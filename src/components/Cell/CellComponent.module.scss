@@ -1,0 +1,75 @@
+@import "../../styles//GlobalStyles.module.scss";
+
+.cell {
+  border: 1px solid $cellColor;
+  cursor: pointer;
+  user-select: none;
+
+  @media (prefers-color-scheme: dark) {
+    & {
+      border: 1px solid rgba(white, 0.3);
+    }
+  }
+}
+
+.used {
+  background-color: black;
+}
+
+.selected {
+  border: 1px solid $positiveColor;
+  background-color: rgba($positiveColor, 0.15);
+}
+
+.canNotPlace {
+  border: 1px solid $negativeColor;
+  background-color: rgba($negativeColor, 0.15);
+}
+
+.setted {
+  @include shipAppear;
+  @media (prefers-color-scheme: dark) {
+    & {
+      background-color: #fff;
+    }
+  }
+}
+
+.missed,
+.destroyed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+  }
+}
+.missed {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  &::before,
+  &::after {
+    width: 70%;
+    height: 3px;
+    background-color: red;
+  }
+
+  &::before {
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+}
+.destroyed::before {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 3px solid blue;
+}

@@ -6,10 +6,11 @@ export interface ICell {
   y: number;
   id: string;
   checked: boolean;
+  isShooted: boolean;
+  isMissed: boolean;
   ship: IShip | null;
   highlighted: boolean;
   isCanNotPlace: boolean;
-  isShooted: boolean;
 }
 
 export const createCell = (x: number, y: number): ICell => {
@@ -21,6 +22,7 @@ export const createCell = (x: number, y: number): ICell => {
     ship: null,
     highlighted: false,
     isShooted: false,
+    isMissed: false,
     isCanNotPlace: false,
   };
 };

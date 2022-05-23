@@ -1,56 +1,15 @@
 import {CaseReducer, PayloadAction, current} from "@reduxjs/toolkit";
-import {IBoard} from "../../models/Board";
-import {ICell} from "../../models/Cell";
-import {createShip, IShip, shipSizes} from "../../models/Ship";
-import {BoardState} from "./boardSlice";
+import {ICell} from "../../../models/Cell";
+import {createShip, IShip, shipSizes} from "../../../models/Ship";
+import {BoardState} from ".";
+import {getValidCoords, isCanPlace} from "./helpers";
+import {turnData} from "../../../api/socketIO/state";
 
 export const setDraggingShip: CaseReducer<
   BoardState,
   PayloadAction<IShip | null>
 > = (state, action): void => {
   state.draggingShip = action.payload;
-};
-
-const isCanPlace = (
-  board: IBoard,
-  x: number,
-  y: number,
-  ship: IShip
-): boolean => {
-  let lastIndex = x + ship.health;
-  for (let index = x; index <= lastIndex; index++) {
-    if (lastIndex + ship.health > 9) {
-      lastIndex = 9;
-    }
-
-    if (
-      ship.coords &&
-      ship.coords.startX === ship.coords.endX &&
-      y + ship.health - 1 > 9
-    )
-      return false;
-    // if(ship.coords && )
-    if (!ship.coords && x + ship.health - 1 > 9) return false;
-    if (
-      ship.coords &&
-      ship.coords.startX !== ship.coords.endX &&
-      x + ship.health - 1 > 9
-    )
-      return false;
-
-    if (
-      board.cells[y - 1 < 0 ? 0 : y - 1][index]?.ship ||
-      board.cells[y + 1 > 9 ? 9 : y + 1][index + 1]?.ship ||
-      board.cells[y + 1 > 9 ? 9 : y + 1][index - 1]?.ship ||
-      board.cells[y - 1 < 0 ? 0 : y - 1][index - 1]?.ship ||
-      board.cells[y][index]?.ship ||
-      board.cells[y][index - 1]?.ship
-    ) {
-      return false;
-    }
-  }
-  // console.log(true);
-  return true;
 };
 
 export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
@@ -184,6 +143,7 @@ export const changeElementPosition: CaseReducer<
         element.ship = null;
       }
       for (let y = startY; y <= endY; y++) {
+        console.log(current(state.userBoard.cells[y][startX]).ship, y, startX);
         const element = state.userBoard.cells[y][startX];
 
         element.highlighted = true;
@@ -241,18 +201,21 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
       startX: x,
       endX: x,
       startY: y,
-      endY: y + 1 + currentShip.health - 1,
+      endY:
+        y + 1 + currentShip.health - 1 > 9 ? 9 : y + 1 + currentShip.health - 1,
     };
   }
-  if (y + currentShip.health > 9) {
+  if (y + currentShip.health > 10) {
+    console.log("three");
     return;
   }
 
-  for (let index = y + 1; index <= y + currentShip.health; index++) {
+  for (let index = y + 1; index < y + currentShip.health; index++) {
     if (
       state.userBoard.cells[index][x].ship &&
       state.userBoard.cells[index][x].ship?.id !== currentShip.id
     ) {
+      console.log("one");
       return;
     }
   }
@@ -261,6 +224,7 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
       state.userBoard.cells[y][index].ship &&
       state.userBoard.cells[y][index].ship?.id !== currentShip.id
     ) {
+      console.log("two");
       return;
     }
   }
@@ -291,35 +255,31 @@ export const setIsHiddenDraggableElement: CaseReducer<
   state.isHiddenDraggableElement = action.payload;
 };
 
-const getValidCoords = (cell: ICell, draggingElement: IShip) => {
-  let x = cell.x ?? (draggingElement.coords?.startX as number);
-  let y = cell.y ?? (draggingElement.coords?.startY as number);
-  let endX = x + draggingElement.health - 1;
-  let endY = y + draggingElement.health - 1;
-  if (endY > 9) {
-    endY = 9;
+export const clearBoard: CaseReducer<BoardState> = (state) => {
+  state.dock = [];
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 10; x++) {
+      const cell = state.userBoard.cells[y][x];
+      cell.ship = null;
+    }
   }
-  if (endX > 9) {
-    endX = 9;
-  }
+};
 
-  const currentAxis =
-    !draggingElement.coords ||
-    draggingElement.coords?.startX !== draggingElement.coords?.endX;
-  const currentAxisStart = currentAxis ? x : y;
-  const currentAxisEnd = currentAxis ? endX : endY;
-  const secondAxisStart = currentAxis ? y : x;
-  const secondAxisEnd = currentAxis ? endY : endX;
+export const setHit: CaseReducer<BoardState, PayloadAction<turnData>> = (
+  state,
+  action
+) => {
+  state.turnsHistory.push(action.payload);
+};
 
-  return {
-    currentAxis,
-    currentAxisStart,
-    currentAxisEnd,
-    secondAxisStart,
-    secondAxisEnd,
-    x,
-    y,
-    endX,
-    endY,
-  };
+export const getHit: CaseReducer<BoardState, PayloadAction<turnData>> = (
+  state,
+  action
+) => {
+  const coords = action.payload.coords;
+  const targetCell = state.userBoard.cells[coords.y][coords.x];
+  targetCell.ship
+    ? (targetCell.isShooted = true)
+    : (targetCell.isMissed = true);
+  state.turnsHistory.push(action.payload);
 };

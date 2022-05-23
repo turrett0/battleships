@@ -1,16 +1,17 @@
 .vertical,
 .horizontal {
   display: grid;
+  position: absolute;
 }
 
 .vertical {
-  position: absolute;
-  left: 0;
-  bottom: 0;
+  top: 0.5rem;
+  left: -1rem;
   height: 20rem;
 }
 
 .horizontal {
+  top: -1rem;
   text-align: center;
   width: 20rem;
   grid-template-columns: repeat(10, 1fr);

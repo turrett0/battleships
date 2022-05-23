@@ -1,21 +1,21 @@
 import {FC} from "react";
-import Dock from "./components/Dock/Dock";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {requireServerPing} from "./api/socketIO/actions";
+import Layout from "./components/Layout/Layout";
+import StartPage from "./pages/StartPage";
 
-import styles from "./styles/GlobalStyles.module.scss";
-import UserBoardComponent from "./components/Boards/UserBoardComponent/UserBoardComponent";
-
+requireServerPing(1);
 const App: FC = () => {
-  // document.addEventListener("mousemove", updateMouseCoords);
-
   return (
-    <div className={styles.app}>
-      <div className={styles.container}>
-        <Dock />
-        <UserBoardComponent />
-      </div>
-
-      {/* <ShipsHealthBox /> */}
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<StartPage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </>
   );
 };
 

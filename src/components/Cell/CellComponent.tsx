@@ -11,6 +11,7 @@ interface Props {
 
 const CellComponent: FC<Props> = ({cell, setCell}) => {
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
+  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
   const {setShipToCell, setHighlightCell, removeHighlightCell, rotateElement} =
     useActions();
 
@@ -44,8 +45,9 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
       }}
       onMouseUp={onMouseUpHandler}
       onMouseDown={() => {
-        setCell(cell);
-        // console.log(cell);
+        if (!isGameInProgress) {
+          setCell(cell);
+        }
       }}
     />
   );

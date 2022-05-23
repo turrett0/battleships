@@ -1,23 +1,24 @@
+@import "../../../styles//GlobalStyles.module.scss";
+
 .container {
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 23rem;
   user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  align-self: baseline;
+  margin: 0 0;
+  gap: 22px;
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template: repeat(10, 2rem) / repeat(10, 2rem);
   user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+}
+
+.disabled {
+  opacity: 0.3;
 }

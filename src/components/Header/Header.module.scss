@@ -1,0 +1,10 @@
+@import "../../styles/GlobalStyles.module.scss";
+.header {
+  width: 100vw;
+  height: 3rem;
+  background-color: $shipColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $defaultColor;
+}

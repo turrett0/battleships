@@ -1,0 +1,16 @@
+@import "../../styles//GlobalStyles.module.scss";
+
+.button {
+  width: 40%;
+  background-color: $shipColor;
+  color: $defaultColor;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.button:disabled {
+  background-color: $defaultDisabledColor;
+}
