@@ -1,7 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {turnData} from "../../../api/socketIO/state";
 import {IBoard, createBoard, roles} from "../../../models/Board";
+import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
+import {IUserData} from "../appSlice/state";
 import {
   removeHighlightCell,
   setDraggingShip,
@@ -14,6 +16,8 @@ import {
   setUserName,
   setIsHiddenDraggableElement,
   clearBoard,
+  setShoot,
+  getHit,
 } from "./actions";
 
 export type BoardState = {
@@ -27,6 +31,15 @@ export type BoardState = {
   isHiddenDraggableElement: boolean;
   turnsHistory: turnData[];
 };
+
+export interface IShoot {
+  coords: {
+    x: ICell["x"];
+    y: ICell["y"];
+  };
+  userID: IUserData["userID"];
+  isShooted: boolean | null;
+}
 
 const initialState: BoardState = {
   userBoard: createBoard(roles.USER),
@@ -69,6 +82,8 @@ const boardSlice = createSlice({
     setUserName,
     setIsHiddenDraggableElement,
     clearBoard,
+    setShoot,
+    getHit,
   },
 });
 

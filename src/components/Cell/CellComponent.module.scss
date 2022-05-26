@@ -56,7 +56,7 @@
   &::after {
     width: 70%;
     height: 3px;
-    background-color: red;
+    background-color: blue;
   }
 
   &::before {
@@ -71,5 +71,5 @@
   width: 80%;
   height: 80%;
   border-radius: 50%;
-  border: 3px solid blue;
+  border: 3px solid red;
 }

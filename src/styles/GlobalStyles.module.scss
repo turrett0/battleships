@@ -32,10 +32,7 @@ $defaultDisabledColor: lightgray;
   max-width: 1200px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-  margin-top: 1rem;
-  gap: 30px;
+  align-items: flex-start;
 
   @media (max-width: 1000px) {
     flex-direction: column;

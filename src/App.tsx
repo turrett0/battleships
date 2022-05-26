@@ -1,10 +1,15 @@
 import {FC} from "react";
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import {requireServerPing} from "./api/socketIO/actions";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useParams,
+  useLocation,
+} from "react-router-dom";
+
 import Layout from "./components/Layout/Layout";
 import StartPage from "./pages/StartPage";
 
-requireServerPing(1);
 const App: FC = () => {
   return (
     <>
@@ -13,6 +18,7 @@ const App: FC = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<StartPage />} />
           </Route>
+          <Route path="/:game" element={<Layout />} />
         </Routes>
       </Router>
     </>

@@ -1,14 +1,15 @@
 import {gameSocket} from ".";
-import {gameSocketAction, serverRegistrationData} from "./state";
+import {store} from "../../store";
+import {IShoot} from "../../store/slices/boardSlice";
+import {gameSocketAction} from "./state";
 
-export const requireServerRegistration = (
-  data: serverRegistrationData["username"]
-): void => {};
+export const requireServerRegistration = (data: string): void => {};
 
-export const requireServerNewGame = (data: any) => {
-  gameSocket.emit(gameSocketAction.REQUEST_NEW_GAME);
+export const requireServerNewGame = () => {
+  const coordsWithShips = store.getState().board.dock;
+  gameSocket.emit(gameSocketAction.REQUEST_NEW_GAME, coordsWithShips);
 };
 
-export const requireServerPing = (data: any) => {
-  gameSocket.emit(gameSocketAction.REQUEST_PING);
+export const requireServerShoot = (data: IShoot) => {
+  gameSocket.emit(gameSocketAction.REQUEST_SHOOT, data);
 };

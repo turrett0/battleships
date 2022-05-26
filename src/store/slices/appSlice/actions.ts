@@ -1,11 +1,11 @@
 import {CaseReducer, PayloadAction} from "@reduxjs/toolkit";
 import {AppState} from ".";
 
-export const setGameStatus: CaseReducer<
+export const setGameData: CaseReducer<
   AppState,
-  PayloadAction<AppState["gameStatus"]>
+  PayloadAction<AppState["gameData"]>
 > = (state, action) => {
-  state.gameStatus = action.payload;
+  state.gameData = action.payload;
 };
 export const setConnectionStatus: CaseReducer<
   AppState,
@@ -18,4 +18,11 @@ export const setUserTurn: CaseReducer<
   PayloadAction<AppState["isUserTurn"]>
 > = (state, action) => {
   state.isUserTurn = action.payload;
+};
+
+export const setUserData: CaseReducer<
+  AppState,
+  PayloadAction<AppState["userData"]>
+> = (state, action) => {
+  state.userData = action.payload;
 };

@@ -1,7 +1,7 @@
 import {CaseReducer, PayloadAction, current} from "@reduxjs/toolkit";
 import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
-import {BoardState} from ".";
+import {BoardState, IShoot} from ".";
 import {getValidCoords, isCanPlace} from "./helpers";
 import {turnData} from "../../../api/socketIO/state";
 
@@ -201,8 +201,7 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
       startX: x,
       endX: x,
       startY: y,
-      endY:
-        y + 1 + currentShip.health - 1 > 9 ? 9 : y + 1 + currentShip.health - 1,
+      endY: y + 1 + currentShip.health - 1 > 9 ? 9 : y + currentShip.health - 1,
     };
   }
   if (y + currentShip.health > 10) {
@@ -276,10 +275,27 @@ export const getHit: CaseReducer<BoardState, PayloadAction<turnData>> = (
   state,
   action
 ) => {
+  console.log("PAYLOAD:", action.payload);
   const coords = action.payload.coords;
   const targetCell = state.userBoard.cells[coords.y][coords.x];
-  targetCell.ship
+  action.payload.isShooted
     ? (targetCell.isShooted = true)
     : (targetCell.isMissed = true);
   state.turnsHistory.push(action.payload);
+  console.log(targetCell);
+  targetCell.checked = true;
+};
+
+export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
+  state,
+  action
+) => {
+  console.log("SET SHOOT:", action.payload);
+  const coords = action.payload.coords;
+
+  action.payload.isShooted
+    ? (state.partnerBoard.cells[coords.y][coords.x].isShooted = true)
+    : (state.partnerBoard.cells[coords.y][coords.x].isMissed = true);
+
+  state.partnerBoard.cells[coords.y][coords.x].checked = true;
 };

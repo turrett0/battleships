@@ -1,9 +1,11 @@
 import {nanoid} from "nanoid";
 import {FC, Fragment, useCallback, useEffect, useRef, useState} from "react";
+import {requireServerNewGame} from "../../../api/socketIO/actions";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
 import {roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
+import {gameStatuses} from "../../../store/slices/appSlice/state";
 import CellComponent from "../../Cell/CellComponent";
 import CustomButton from "../../CustomButton/CustomButton";
 import LetterBlock from "../../LetterBlock/LetterBlock";
@@ -18,7 +20,8 @@ const UserBoardComponent: FC = () => {
     setIsDragging,
     setDraggingShip,
   } = useActions();
-  const isGameInProgress = useAppSelector(({board}) => board.isGameInProgress);
+  const isGameInProgress =
+    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -46,6 +49,10 @@ const UserBoardComponent: FC = () => {
       }
     };
   }, [mouseMoveHandler, cell]);
+
+  const startGameHandler = () => {
+    requireServerNewGame();
+  };
 
   return (
     <div className={styles.container}>
@@ -90,7 +97,7 @@ const UserBoardComponent: FC = () => {
         ))}
       </div>
       {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 10} callback={() => {}}>
+        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
           Начать игру
         </CustomButton>
       )}

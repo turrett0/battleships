@@ -7,9 +7,6 @@
   align-items: center;
   width: 23rem;
   user-select: none;
-  align-self: baseline;
-  margin: 0 0;
-  gap: 22px;
 }
 
 .board {
@@ -17,6 +14,7 @@
   display: grid;
   grid-template: repeat(10, 2rem) / repeat(10, 2rem);
   user-select: none;
+  margin: 1.5rem 0;
 }
 
 .disabled {

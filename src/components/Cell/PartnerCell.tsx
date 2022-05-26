@@ -12,7 +12,7 @@ const PartnerCell: FC<Props> = ({cell, callback}) => {
     <div
       onClick={() => callback(cell)}
       className={`${styles.cell} ${
-        cell.isShooted ? (cell.ship ? styles.destroyed : styles.missed) : ""
+        cell.checked ? (cell.isShooted ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${
         cell.isCanNotPlace ? styles.canNotPlace : ""
       } ${cell.ship ? styles.setted : ""}`}
