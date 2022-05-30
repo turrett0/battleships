@@ -62,7 +62,6 @@ export const isCanPlace = (
   if (lastIndex > 9) {
     lastIndex = 9;
   }
-
   if (currentAxis) {
     for (let index = x - 1 < 0 ? 0 : x - 1; index <= lastIndex; index++) {
       if (
@@ -75,7 +74,7 @@ export const isCanPlace = (
       }
     }
   } else {
-    for (let index = y <= 0 ? 0 : y - 1; index < lastVerticalIndex; index++) {
+    for (let index = y <= 0 ? 0 : y - 1; index <= lastVerticalIndex; index++) {
       if (
         board.cells[index][x].ship ||
         board.cells[index][x - 1 < 0 ? 0 : x - 1].ship ||

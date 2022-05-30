@@ -3,7 +3,6 @@ import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
 import {BoardState, IShoot} from ".";
 import {getValidCoords, isCanPlace} from "./helpers";
-import {turnData} from "../../../api/socketIO/state";
 
 export const setDraggingShip: CaseReducer<
   BoardState,
@@ -143,7 +142,7 @@ export const changeElementPosition: CaseReducer<
         element.ship = null;
       }
       for (let y = startY; y <= endY; y++) {
-        console.log(current(state.userBoard.cells[y][startX]).ship, y, startX);
+        // console.log(current(state.userBoard.cells[y][startX]).ship, y, startX);
         const element = state.userBoard.cells[y][startX];
 
         element.highlighted = true;
@@ -205,25 +204,33 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
     };
   }
   if (y + currentShip.health > 10) {
-    console.log("three");
+    // console.log("three");
     return;
   }
 
-  for (let index = y + 1; index < y + currentShip.health; index++) {
+  let yAxis = y + currentShip.health > 9 ? 9 : y + currentShip.health;
+  let xAxis = x + currentShip.health > 9 ? 9 : x + currentShip.health;
+
+  for (let index = y + 1; index <= yAxis; index++) {
     if (
-      state.userBoard.cells[index][x].ship &&
+      (state.userBoard.cells[index][x].ship ||
+        state.userBoard.cells[index][x + 1 > 9 ? 9 : x + 1].ship ||
+        state.userBoard.cells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
       state.userBoard.cells[index][x].ship?.id !== currentShip.id
     ) {
-      console.log("one");
+      // console.log("one");
       return;
     }
   }
-  for (let index = x; index < x + currentShip.health; index++) {
+  console.log(x + currentShip.health, xAxis);
+  for (let index = x; index <= xAxis; index++) {
     if (
-      state.userBoard.cells[y][index].ship &&
+      (state.userBoard.cells[y][index].ship ||
+        state.userBoard.cells[y + 1 > 9 ? 9 : y + 1][index].ship ||
+        state.userBoard.cells[y - 1 < 0 ? 0 : y - 1][index].ship) &&
       state.userBoard.cells[y][index].ship?.id !== currentShip.id
     ) {
-      console.log("two");
+      // console.log("two");
       return;
     }
   }
@@ -259,28 +266,35 @@ export const clearBoard: CaseReducer<BoardState> = (state) => {
   for (let y = 0; y < 10; y++) {
     for (let x = 0; x < 10; x++) {
       const cell = state.userBoard.cells[y][x];
+      const partnerCell = state.partnerBoard.cells[y][x];
       cell.ship = null;
+      cell.isMissed = false;
+      cell.isShooted = false;
+      cell.checked = false;
+
+      partnerCell.isMissed = false;
+      partnerCell.isShooted = false;
+      partnerCell.checked = false;
     }
   }
 };
 
-export const setHit: CaseReducer<BoardState, PayloadAction<turnData>> = (
-  state,
-  action
-) => {
-  state.turnsHistory.push(action.payload);
-};
-
-export const getHit: CaseReducer<BoardState, PayloadAction<turnData>> = (
+export const getHit: CaseReducer<BoardState, PayloadAction<IShoot>> = (
   state,
   action
 ) => {
   console.log("PAYLOAD:", action.payload);
   const coords = action.payload.coords;
   const targetCell = state.userBoard.cells[coords.y][coords.x];
-  action.payload.isShooted
-    ? (targetCell.isShooted = true)
-    : (targetCell.isMissed = true);
+  const shootedShip = state.dock.find(
+    (ship) => ship.id === targetCell.ship?.id
+  );
+  if (action.payload.isShooted && shootedShip) {
+    targetCell.isShooted = true;
+    shootedShip.health = shootedShip.health - 1;
+  } else {
+    targetCell.isMissed = true;
+  }
   state.turnsHistory.push(action.payload);
   console.log(targetCell);
   targetCell.checked = true;
@@ -298,4 +312,5 @@ export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
     : (state.partnerBoard.cells[coords.y][coords.x].isMissed = true);
 
   state.partnerBoard.cells[coords.y][coords.x].checked = true;
+  state.turnsHistory.push(action.payload);
 };

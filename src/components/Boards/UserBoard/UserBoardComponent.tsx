@@ -26,7 +26,6 @@ const UserBoardComponent: FC = () => {
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
   const boardRef = useRef<HTMLDivElement>(null);
   const dock = useAppSelector(({board}) => board.dock);
-
   const [cell, setCell] = useState<ICell | null>(null);
 
   const mouseMoveHandler = useCallback(() => {

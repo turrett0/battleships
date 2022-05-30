@@ -8,21 +8,15 @@ export enum gameSocketEvents {
   ON_END_GAME = "END_GAME",
   PING = "PING",
   ON_NEW_SHOOT = "NEW_SHOOT",
+  ON_BREAK_GAME = "BREAK_GAME",
 }
 
 export enum gameSocketAction {
   REQUEST_SHOOT = "SHOOT_REQUEST",
   REQUEST_NEW_GAME = "REQUEST_NEW_GAME",
-  REQUEST_END_GAME = "REQUEST_END_GAME",
+  REQUEST_BREAK_GAME = "REQUEST_BREAK_GAME",
   REQUEST_PING = "REQUEST_PING",
 }
-
-// export interface serverRegistrationData {
-//   username: string;
-//   userID: string;
-//   socketID: string;
-//   status: gameStatuses;
-// }
 
 export interface turnData {
   coords: {

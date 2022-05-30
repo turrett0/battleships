@@ -1,11 +1,11 @@
 @import "../../styles//GlobalStyles.module.scss";
 
 .ship {
-  //   background-color: $shipColor;
-  border: 2px dotted $mainUnsetColor;
+  border: 1px dotted $mainUnsetColor;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  height: 2rem;
 }
 
 .SMALL,

@@ -1,4 +1,5 @@
 import {FC} from "react";
+import {useAppSelector} from "../../hooks/store/useAppSelector";
 import {ICell} from "../../models/Cell";
 import styles from "./PartnerCell.module.scss";
 
@@ -8,9 +9,15 @@ interface Props {
 }
 
 const PartnerCell: FC<Props> = ({cell, callback}) => {
+  const isUserTurn = useAppSelector(({app}) => app.isUserTurn);
+
   return (
     <div
-      onClick={() => callback(cell)}
+      onClick={() => {
+        if (!cell.checked && isUserTurn) {
+          callback(cell);
+        }
+      }}
       className={`${styles.cell} ${
         cell.checked ? (cell.isShooted ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${

@@ -1,10 +1,23 @@
 @import "../../styles/GlobalStyles.module.scss";
 .header {
   width: 100vw;
-  height: 3rem;
-  background-color: $shipColor;
+  min-height: 3rem;
+  padding: 0 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  background-color: $shipColor;
   color: $defaultColor;
+}
+
+.statuses {
+  display: flex;
+  flex-direction: column;
+}
+
+.endGameBtn {
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
 }

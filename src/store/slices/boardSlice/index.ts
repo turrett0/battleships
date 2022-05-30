@@ -29,7 +29,7 @@ export type BoardState = {
   isDragging: boolean;
   isGameInProgress: boolean;
   isHiddenDraggableElement: boolean;
-  turnsHistory: turnData[];
+  turnsHistory: IShoot[];
 };
 
 export interface IShoot {

@@ -4,19 +4,21 @@ import {requireServerShoot} from "../../../api/socketIO/actions";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
 import {ICell} from "../../../models/Cell";
+import {gameStatuses} from "../../../store/slices/appSlice/state";
 import {IShoot} from "../../../store/slices/boardSlice";
 import PartnerCell from "../../Cell/PartnerCell";
 import LetterBlock from "../../LetterBlock/LetterBlock";
 import styles from "./PartnerBoardComponent.module.scss";
 
 const PartnerBoardComponent: FC = () => {
-  const {setShoot} = useActions();
   const userID = useAppSelector(({app}) => app.userData?.userID);
   const board = useAppSelector((app) => app.board.partnerBoard);
   const isUserTurn = useAppSelector(({app}) => app.isUserTurn);
+  const isGameInProgress =
+    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
 
   const onClickHandler = (target: ICell) => {
-    if (userID) {
+    if (userID && isGameInProgress) {
       const newShoot: IShoot = {
         coords: {
           x: target.x,
@@ -25,7 +27,6 @@ const PartnerBoardComponent: FC = () => {
         userID,
         isShooted: null,
       };
-      // setShoot(newShoot);
       requireServerShoot(newShoot);
     }
   };

@@ -12,10 +12,13 @@ const Header = () => {
   const connectionStatus = useAppSelector(({app}) => app.connectionStatus);
   const gameStatus = useAppSelector(({app}) => app.gameData.status);
   return (
-    <div className={styles.header}>
-      <span> {messages[connectionStatus]}</span>
-      <span>{gameStatus}</span>
-    </div>
+    <header className={styles.header}>
+      <button className={styles.endGameBtn}>Закончить игру</button>
+      <div className={styles.statuses}>
+        <span>{messages[connectionStatus]}</span>
+        <span>gameStatus: {gameStatus}</span>
+      </div>
+    </header>
   );
 };
 

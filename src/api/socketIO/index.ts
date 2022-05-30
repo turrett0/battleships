@@ -3,6 +3,8 @@ import {store} from "../../store";
 import {connectionStatuses} from "../../store/slices/appSlice/state";
 import {IShoot} from "../../store/slices/boardSlice";
 import {
+  serverBreakGameHandler,
+  serverEndGameHandler,
   serverGetNewShootHandler,
   serverRegistrationHandler,
   serverSetNewGameHandler,
@@ -48,4 +50,12 @@ gameSocket.on(gameSocketEvents.ON_AWAIT_GAME, (data) => {
 
 gameSocket.on(gameSocketEvents.ON_NEW_SHOOT, (data: IShoot) =>
   serverGetNewShootHandler(data)
+);
+
+gameSocket.on(gameSocketEvents.ON_END_GAME, (data) =>
+  serverEndGameHandler(data)
+);
+
+gameSocket.on(gameSocketEvents.ON_BREAK_GAME, (data) =>
+  serverBreakGameHandler(data)
 );
