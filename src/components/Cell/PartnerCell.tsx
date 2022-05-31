@@ -9,7 +9,7 @@ interface Props {
 }
 
 const PartnerCell: FC<Props> = ({cell, callback}) => {
-  const isUserTurn = useAppSelector(({app}) => app.isUserTurn);
+  const isUserTurn = useAppSelector(({app}) => app.gameData.isUserTurn);
 
   return (
     <div
@@ -22,7 +22,9 @@ const PartnerCell: FC<Props> = ({cell, callback}) => {
         cell.checked ? (cell.isShooted ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${
         cell.isCanNotPlace ? styles.canNotPlace : ""
-      } ${cell.ship ? styles.setted : ""}`}
+      } ${cell.ship ? styles.setted : ""} ${
+        cell.isCompletelyDestroyed ? styles.completelyDestroyed : ""
+      }`}
     />
   );
 };

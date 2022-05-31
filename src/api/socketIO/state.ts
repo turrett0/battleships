@@ -1,5 +1,6 @@
 import {ICell} from "../../models/Cell";
-import {IUserData} from "../../store/slices/appSlice/state";
+import {AppState} from "../../store/slices/appSlice";
+import {gameStatuses, IUserData} from "../../store/slices/appSlice/state";
 
 export enum gameSocketEvents {
   ON_REGISTRATION = "REGISTRATION",
@@ -15,7 +16,8 @@ export enum gameSocketAction {
   REQUEST_SHOOT = "SHOOT_REQUEST",
   REQUEST_NEW_GAME = "REQUEST_NEW_GAME",
   REQUEST_BREAK_GAME = "REQUEST_BREAK_GAME",
-  REQUEST_PING = "REQUEST_PING",
+  REQUEST_REGISTRATION = "REQUEST_REGISTRATION",
+  REQUEST_FRIEND_GAME = "REQUEST_FRIEND_GAME",
 }
 
 export interface turnData {
@@ -25,4 +27,11 @@ export interface turnData {
   };
   author: IUserData["userID"];
   isShooted: boolean;
+}
+
+export interface GameData {
+  status: gameStatuses;
+  sessionID: string;
+  partnerID: string;
+  firstTurnID: string;
 }

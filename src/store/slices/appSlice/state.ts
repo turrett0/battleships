@@ -13,6 +13,6 @@ export enum gameStatuses {
 }
 
 export interface IUserData {
-  socketID: string;
+  username: string | null;
   userID: string;
 }

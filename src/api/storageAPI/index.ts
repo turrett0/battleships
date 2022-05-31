@@ -30,8 +30,10 @@ class StorageWrapper {
   setItem(key: string, value: any) {
     if (!this.storage) return;
     try {
-      if (typeof value === "string") {
+      if (typeof value !== "string") {
         this.storage.setItem(key, JSON.stringify(value));
+      } else {
+        this.storage.setItem(key, value);
       }
     } catch (error) {
       console.log(error);

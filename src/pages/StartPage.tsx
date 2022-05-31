@@ -9,6 +9,7 @@ import styles from "../styles/GlobalStyles.module.scss";
 const StartPage = () => {
   const isGameInProgress =
     useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
+
   return (
     <>
       <div className={styles.container}>

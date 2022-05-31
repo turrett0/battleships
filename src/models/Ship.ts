@@ -22,7 +22,7 @@ export interface IShip {
     startY: number;
     endY: number;
   } | null;
-  health: shipHealth;
+  health: shipHealth | number;
   id: string;
 }
 

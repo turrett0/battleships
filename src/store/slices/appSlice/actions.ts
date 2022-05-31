@@ -13,11 +13,11 @@ export const setConnectionStatus: CaseReducer<
 > = (state, action) => {
   state.connectionStatus = action.payload;
 };
-export const setUserTurn: CaseReducer<
-  AppState,
-  PayloadAction<AppState["isUserTurn"]>
-> = (state, action) => {
-  state.isUserTurn = action.payload;
+export const setUserTurn: CaseReducer<AppState, PayloadAction<boolean>> = (
+  state,
+  action
+) => {
+  state.gameData.isUserTurn = action.payload;
 };
 
 export const setUserData: CaseReducer<

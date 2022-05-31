@@ -5,6 +5,10 @@
   cursor: pointer;
   user-select: none;
 
+  &.destroyed {
+    background-color: rgb(250, 250, 214);
+  }
+
   @media (prefers-color-scheme: dark) {
     & {
       border: 1px solid rgba(white, 0.3);
@@ -36,7 +40,8 @@
 }
 
 .missed,
-.destroyed {
+.destroyed,
+.completelyDestroyed {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,15 +52,16 @@
     position: absolute;
   }
 }
-.missed {
+
+.destroyed {
   position: relative;
   height: 100%;
   width: 100%;
 
   &::before,
   &::after {
-    width: 70%;
-    height: 3px;
+    width: 100%;
+    height: 2px;
     background-color: blue;
   }
 
@@ -67,9 +73,31 @@
     transform: rotate(-45deg);
   }
 }
-.destroyed::before {
-  width: 80%;
-  height: 80%;
-  border-radius: 50%;
-  border: 3px solid red;
+.destroyed {
+  &::before,
+  &::after {
+    background-color: red;
+  }
+}
+
+.missed {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  &::before {
+    width: 20%;
+    height: 20%;
+    border-radius: 50%;
+    background-color: $missedDotColor;
+    @media (prefers-color-scheme: dark) {
+      & {
+        background-color: $missedDotColorReversed;
+      }
+    }
+  }
+}
+
+.completelyDestroyed {
+  border: 2px solid red;
 }

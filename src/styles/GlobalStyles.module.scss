@@ -4,10 +4,14 @@ $negativeColor: red;
 $mainUnsetColor: gray;
 $mainBorderColor: rgba($mainUnsetColor, 0.015);
 $cellColor: rgb(116 119 183 / 30%);
+$cellColorReversed: rgba(white, 0.3);
 $mainBorderOpacity: 0.015;
 $mainBorder: 2px solid;
 $defaultColor: #fff;
 $defaultDisabledColor: lightgray;
+$smallScreen: 1000px;
+$missedDotColor: black;
+$missedDotColorReversed: white;
 
 @mixin shipAppear {
   background-color: rgba($shipColor, $mainBorderOpacity);
@@ -29,6 +33,7 @@ $defaultDisabledColor: lightgray;
 }
 
 .container {
+  margin: 1rem auto;
   max-width: 1200px;
   display: flex;
   justify-content: center;

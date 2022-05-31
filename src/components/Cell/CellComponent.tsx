@@ -36,7 +36,9 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
         cell.checked ? (cell.isShooted ? styles.destroyed : styles.missed) : ""
       } ${cell.highlighted ? styles.selected : ""} ${
         cell.isCanNotPlace ? styles.canNotPlace : ""
-      } ${cell.ship ? styles.setted : ""}`}
+      } ${cell.ship ? styles.setted : ""} ${
+        cell.isCompletelyDestroyed ? styles.completelyDestroyed : ""
+      }`}
       onMouseOver={() => {
         if (!cell.highlighted && isDraggingGlobal && !isGameInProgress) {
           setHighlightCell(cell);
@@ -49,6 +51,12 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
       }}
       onMouseUp={onMouseUpHandler}
       onMouseDown={() => {
+        if (!isGameInProgress) {
+          setCell(cell);
+        }
+      }}
+      onTouchStart={() => {
+        console.log("touch start");
         if (!isGameInProgress) {
           setCell(cell);
         }

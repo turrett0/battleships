@@ -138,15 +138,17 @@ export const changeElementPosition: CaseReducer<
     ) {
       for (let x = startX; x <= endX; x++) {
         const element = state.userBoard.cells[startY][x];
-        element.highlighted = true;
-        element.ship = null;
+        if (element.ship) {
+          element.highlighted = true;
+          element.ship = null;
+        }
       }
       for (let y = startY; y <= endY; y++) {
-        // console.log(current(state.userBoard.cells[y][startX]).ship, y, startX);
         const element = state.userBoard.cells[y][startX];
-
-        element.highlighted = true;
-        element.ship = null;
+        if (element.ship) {
+          element.highlighted = true;
+          element.ship = null;
+        }
       }
     }
     state.dock = state.dock.filter((ship) => ship.id !== action.payload.id);
@@ -186,32 +188,22 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
     ? x + currentShip.health - 1
     : y + currentShip.health - 1;
 
-  let coords = {} as IShip["coords"];
+  let yAxis = y + currentShip.health > 9 ? 9 : y + currentShip.health - 1;
+  let xAxis = x + currentShip.health > 9 ? 9 : x + currentShip.health;
+  let coords: IShip["coords"] = {
+    startX: x,
+    endX: !currentAxis ? xAxis : x,
+    startY: y,
+    endY: !currentAxis ? y : yAxis,
+  };
 
-  if (!currentAxis) {
-    coords = {
-      startX: x,
-      endX: x + currentShip.health - 1,
-      startY: y,
-      endY: y,
-    };
-  } else {
-    coords = {
-      startX: x,
-      endX: x,
-      startY: y,
-      endY: y + 1 + currentShip.health - 1 > 9 ? 9 : y + currentShip.health - 1,
-    };
-  }
-  if (y + currentShip.health > 10) {
+  console.log(coords);
+
+  if (y + currentShip.health > 10 || x + currentShip.health > 10) {
     // console.log("three");
     return;
   }
-
-  let yAxis = y + currentShip.health > 9 ? 9 : y + currentShip.health;
-  let xAxis = x + currentShip.health > 9 ? 9 : x + currentShip.health;
-
-  for (let index = y + 1; index <= yAxis; index++) {
+  for (let index = y; index <= yAxis; index++) {
     if (
       (state.userBoard.cells[index][x].ship ||
         state.userBoard.cells[index][x + 1 > 9 ? 9 : x + 1].ship ||
@@ -222,7 +214,6 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
       return;
     }
   }
-  console.log(x + currentShip.health, xAxis);
   for (let index = x; index <= xAxis; index++) {
     if (
       (state.userBoard.cells[y][index].ship ||
@@ -271,10 +262,12 @@ export const clearBoard: CaseReducer<BoardState> = (state) => {
       cell.isMissed = false;
       cell.isShooted = false;
       cell.checked = false;
+      cell.isCompletelyDestroyed = false;
 
       partnerCell.isMissed = false;
       partnerCell.isShooted = false;
       partnerCell.checked = false;
+      partnerCell.isCompletelyDestroyed = false;
     }
   }
 };
@@ -289,14 +282,36 @@ export const getHit: CaseReducer<BoardState, PayloadAction<IShoot>> = (
   const shootedShip = state.dock.find(
     (ship) => ship.id === targetCell.ship?.id
   );
-  if (action.payload.isShooted && shootedShip) {
+  if (action.payload.isShooted && shootedShip && shootedShip.coords) {
     targetCell.isShooted = true;
     shootedShip.health = shootedShip.health - 1;
+
+    if (shootedShip.health === 0) {
+      for (
+        let index = shootedShip.coords?.startX;
+        index <= shootedShip.coords?.endX;
+        index++
+      ) {
+        console.log(index, shootedShip.coords.startX, shootedShip.coords.endX);
+
+        const element = state.userBoard.cells[shootedShip.coords.startY][index];
+        element.isCompletelyDestroyed = true;
+      }
+      for (
+        let index = shootedShip.coords?.startY;
+        index <= shootedShip.coords?.endY;
+        index++
+      ) {
+        console.log(index, shootedShip.coords.startY, shootedShip.coords.endY);
+
+        const element = state.userBoard.cells[index][shootedShip.coords.startX];
+        element.isCompletelyDestroyed = true;
+      }
+    }
   } else {
     targetCell.isMissed = true;
   }
   state.turnsHistory.push(action.payload);
-  console.log(targetCell);
   targetCell.checked = true;
 };
 
@@ -304,8 +319,9 @@ export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
   state,
   action
 ) => {
-  console.log("SET SHOOT:", action.payload);
   const coords = action.payload.coords;
+
+  console.log("SET SHOOT:", action.payload);
 
   action.payload.isShooted
     ? (state.partnerBoard.cells[coords.y][coords.x].isShooted = true)
@@ -313,4 +329,31 @@ export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
 
   state.partnerBoard.cells[coords.y][coords.x].checked = true;
   state.turnsHistory.push(action.payload);
+  console.log(action.payload);
+  if (action.payload.destroyedShipData?.coords) {
+    for (
+      let index = action.payload.destroyedShipData.coords.startX;
+      index <= action.payload.destroyedShipData.coords.endX;
+      index++
+    ) {
+      console.log(index);
+      const element =
+        state.partnerBoard.cells[
+          action.payload.destroyedShipData.coords.startY
+        ][index];
+      element.isCompletelyDestroyed = true;
+    }
+    for (
+      let index = action.payload.destroyedShipData.coords.startY;
+      index <= action.payload.destroyedShipData.coords.endY;
+      index++
+    ) {
+      console.log(index);
+      const element =
+        state.partnerBoard.cells[index][
+          action.payload.destroyedShipData.coords.startX
+        ];
+      element.isCompletelyDestroyed = true;
+    }
+  }
 };

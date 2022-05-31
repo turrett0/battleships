@@ -2,6 +2,9 @@ import {io} from "socket.io-client";
 import {store} from "../../store";
 import {connectionStatuses} from "../../store/slices/appSlice/state";
 import {IShoot} from "../../store/slices/boardSlice";
+import {localStorageWrapper} from "../storageAPI";
+import {localStorageDataTypes} from "../storageAPI/localStorage";
+import {requireServerRegistration} from "./actions";
 import {
   serverBreakGameHandler,
   serverEndGameHandler,
@@ -14,6 +17,12 @@ import {gameSocketEvents} from "./state";
 export const gameSocket = io("ws://192.168.3.7:6969");
 
 gameSocket.on("connect", () => {
+  const userData = store.getState().app.userData;
+  if (userData) {
+    requireServerRegistration(userData);
+  } else {
+    requireServerRegistration(null);
+  }
   store.dispatch({
     type: "app/setConnectionStatus",
     payload: connectionStatuses.CONNECTED,
@@ -36,9 +45,10 @@ gameSocket.on("connect_error", () => {
   }
 });
 
-gameSocket.on(gameSocketEvents.ON_REGISTRATION, (data) =>
-  serverRegistrationHandler(data)
-);
+gameSocket.on(gameSocketEvents.ON_REGISTRATION, (data) => {
+  serverRegistrationHandler(data);
+  localStorageWrapper.setItem(localStorageDataTypes.USER_DATA, data);
+});
 
 gameSocket.on(gameSocketEvents.ON_SET_GAME, (data) =>
   serverSetNewGameHandler(data)

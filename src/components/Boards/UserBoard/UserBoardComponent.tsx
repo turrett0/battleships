@@ -55,12 +55,7 @@ const UserBoardComponent: FC = () => {
 
   return (
     <div className={styles.container}>
-      <span>
-        {board.role === roles.USER
-          ? "Моя Доска"
-          : `Доска пользователя ${board.username}`}
-      </span>
-
+      <span>Моя Доска</span>
       <div
         ref={boardRef}
         className={styles.board}

@@ -1,12 +1,18 @@
 import {gameStatuses, IUserData} from "../../store/slices/appSlice/state";
 import {store} from "../../store";
 import {IShoot} from "../../store/slices/boardSlice";
+import {GameData} from "./state";
 export const serverRegistrationHandler = (data: IUserData) => {
   store.dispatch({type: "app/setUserData", payload: data});
 };
 
-export const serverSetNewGameHandler = (data: any) => {
-  store.dispatch({type: "app/setGameData", payload: data});
+export const serverSetNewGameHandler = (data: GameData) => {
+  const isUserFirstTurn =
+    store.getState().app.userData?.userID === data.firstTurnID;
+  store.dispatch({
+    type: "app/setGameData",
+    payload: {...data, isUserTurn: isUserFirstTurn},
+  });
 };
 
 export const serverGetNewShootHandler = (data: IShoot) => {
@@ -44,4 +50,6 @@ export const serverBreakGameHandler = (data: string) => {
     type: "app/setGameData",
     payload: {status: gameStatuses.INIT, sessionID: null, partnerID: null},
   });
+  console.log(data);
+  alert(data);
 };

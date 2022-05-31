@@ -1,4 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {localStorageWrapper} from "../../../api/storageAPI";
+import {localStorageDataTypes} from "../../../api/storageAPI/localStorage";
 import {
   setConnectionStatus,
   setGameData,
@@ -13,15 +15,21 @@ export type AppState = {
     status: gameStatuses;
     sessionID: string | null;
     partnerID: string | null;
+    isUserTurn: boolean;
   };
-  isUserTurn: boolean;
-  userData: IUserData | null;
+
+  userData: IUserData | undefined;
 };
 const initialState: AppState = {
   connectionStatus: connectionStatuses.CONNECTING,
-  gameData: {status: gameStatuses.INIT, sessionID: null, partnerID: null},
-  isUserTurn: true,
-  userData: null,
+  gameData: {
+    status: gameStatuses.INIT,
+    sessionID: null,
+    partnerID: null,
+    isUserTurn: true,
+  },
+
+  userData: localStorageWrapper.getItem(localStorageDataTypes.USER_DATA),
 };
 
 const appSlice = createSlice({

@@ -11,6 +11,7 @@ export interface ICell {
   ship: IShip | null;
   highlighted: boolean;
   isCanNotPlace: boolean;
+  isCompletelyDestroyed: boolean;
 }
 
 export const createCell = (x: number, y: number): ICell => {
@@ -24,5 +25,6 @@ export const createCell = (x: number, y: number): ICell => {
     isShooted: false,
     isMissed: false,
     isCanNotPlace: false,
+    isCompletelyDestroyed: false,
   };
 };

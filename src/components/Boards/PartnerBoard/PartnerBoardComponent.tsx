@@ -13,9 +13,10 @@ import styles from "./PartnerBoardComponent.module.scss";
 const PartnerBoardComponent: FC = () => {
   const userID = useAppSelector(({app}) => app.userData?.userID);
   const board = useAppSelector((app) => app.board.partnerBoard);
-  const isUserTurn = useAppSelector(({app}) => app.isUserTurn);
+  const isUserTurn = useAppSelector(({app}) => app.gameData.isUserTurn);
+  const gameStatus = useAppSelector(({app}) => app.gameData.status);
   const isGameInProgress =
-    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
+    gameStatus !== gameStatuses.INIT && gameStatus !== gameStatuses.AWAITING;
 
   const onClickHandler = (target: ICell) => {
     if (userID && isGameInProgress) {
@@ -26,15 +27,20 @@ const PartnerBoardComponent: FC = () => {
         },
         userID,
         isShooted: null,
+        destroyedShipData: null,
       };
       requireServerShoot(newShoot);
     }
   };
 
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${
+        !isUserTurn || !isGameInProgress ? styles.disabled : ""
+      }`}
+    >
       <span>Доска пользователя {board.username}</span>
-      <div className={`${styles.board} ${!isUserTurn ? styles.disabled : ""}`}>
+      <div className={`${styles.board}`}>
         <LetterBlock
           content={["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]}
           role={"horizontal"}

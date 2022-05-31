@@ -1,4 +1,6 @@
+import {requireServerBreakGame} from "../../api/socketIO/actions";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
+import {gameStatuses} from "../../store/slices/appSlice/state";
 import styles from "./Header.module.scss";
 
 enum messages {
@@ -10,13 +12,19 @@ enum messages {
 
 const Header = () => {
   const connectionStatus = useAppSelector(({app}) => app.connectionStatus);
+  const userID = useAppSelector(({app}) => app.userData?.userID);
   const gameStatus = useAppSelector(({app}) => app.gameData.status);
   return (
     <header className={styles.header}>
-      <button className={styles.endGameBtn}>Закончить игру</button>
+      {gameStatus !== gameStatuses.INIT && (
+        <button className={styles.endGameBtn} onClick={requireServerBreakGame}>
+          Закончить игру
+        </button>
+      )}
       <div className={styles.statuses}>
         <span>{messages[connectionStatus]}</span>
         <span>gameStatus: {gameStatus}</span>
+        <span>userID: {userID}</span>
       </div>
     </header>
   );

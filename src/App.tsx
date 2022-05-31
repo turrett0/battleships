@@ -1,16 +1,13 @@
 import {FC} from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useParams,
-  useLocation,
-} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {localStorageWrapper} from "./api/storageAPI";
 
 import Layout from "./components/Layout/Layout";
 import StartPage from "./pages/StartPage";
 
 const App: FC = () => {
+  console.log(localStorageWrapper.getItem("hui"));
+
   return (
     <>
       <Router>

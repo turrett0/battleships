@@ -7,6 +7,11 @@
   align-items: center;
   width: 23rem;
   user-select: none;
+  @media (max-width: $smallScreen) {
+    & {
+      order: 3;
+    }
+  }
 }
 
 .board {
@@ -19,4 +24,9 @@
 
 .disabled {
   opacity: 0.3;
+  @media (max-width: $smallScreen) {
+    & {
+      display: none;
+    }
+  }
 }

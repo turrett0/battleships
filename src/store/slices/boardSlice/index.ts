@@ -39,6 +39,7 @@ export interface IShoot {
   };
   userID: IUserData["userID"];
   isShooted: boolean | null;
+  destroyedShipData: {coords: IShip["coords"]} | null;
 }
 
 const initialState: BoardState = {

@@ -1,3 +1,5 @@
+@import "../../styles/GlobalStyles.module.scss";
+
 .container {
   display: flex;
   flex-direction: column;
@@ -6,9 +8,9 @@
   height: 220px;
   gap: 20px 0;
 
-  @media (max-width: 1000px) {
+  @media (max-width: $smallScreen) {
     & {
-      order: 1;
+      order: 2;
     }
   }
 }
