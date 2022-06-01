@@ -34,23 +34,29 @@ const UserBoardComponent: FC = () => {
   const dock = useAppSelector(({board}) => board.dock);
   const [cell, setCell] = useState<ICell | null>(null);
 
-  const mouseMoveHandler = useCallback(() => {
-    if (cell && cell.ship && !isDraggingGlobal) {
-      if (!isDraggingGlobal) {
-        setIsDragging(true);
+  const mouseMoveHandler = useCallback(
+    (e: PointerEvent) => {
+      console.log("move board");
+      const element = e.target as HTMLElement;
+      element.releasePointerCapture(e.pointerId);
+      if (cell && cell.ship && !isDraggingGlobal) {
+        if (!isDraggingGlobal) {
+          setIsDragging(true);
+        }
+        setDraggingShip(cell.ship);
+        changeElementPosition(cell.ship);
       }
-      setDraggingShip(cell.ship);
-      changeElementPosition(cell.ship);
-    }
-  }, [cell, isDraggingGlobal]);
+    },
+    [cell, isDraggingGlobal]
+  );
 
   useEffect(() => {
     if (boardRef.current && cell) {
-      boardRef.current.addEventListener("mousemove", mouseMoveHandler);
+      boardRef.current.addEventListener("pointermove", mouseMoveHandler);
     }
     return () => {
       if (boardRef.current) {
-        boardRef.current.removeEventListener("mousemove", mouseMoveHandler);
+        boardRef.current.removeEventListener("pointermove", mouseMoveHandler);
       }
     };
   }, [mouseMoveHandler, cell]);
@@ -72,14 +78,15 @@ const UserBoardComponent: FC = () => {
         ref={boardRef}
         className={styles.board}
         draggable={false}
-        onMouseEnter={() => {
+        onPointerEnter={(e) => {
+          const element = e.target as HTMLElement;
+          element.releasePointerCapture(e.pointerId);
           if (isDraggingGlobal && draggingElement) {
             setIsHiddenDraggableElement(true);
           }
         }}
-        onMouseLeave={() => {
+        onPointerLeave={(e) => {
           if (isDraggingGlobal && draggingElement) {
-            console.log("leave");
             setIsHiddenDraggableElement(false);
           }
         }}
@@ -103,7 +110,7 @@ const UserBoardComponent: FC = () => {
         ))}
       </div>
       {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 1} callback={startGameHandler}>
+        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
           Начать игру
         </CustomButton>
       )}
@@ -116,7 +123,9 @@ const UserBoardComponent: FC = () => {
         <span>Игра с другом</span>
       </label>
       {sessionID && isPrivateGame && (
-        <span>{`${window.location.href}id${sessionID}`}</span>
+        <span
+          style={{userSelect: "initial"}}
+        >{`${window.location.href}id${sessionID}`}</span>
       )}
     </div>
   );

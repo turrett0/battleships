@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
   width: 23rem;
-  // user-select: none;
+  user-select: none;
 
   @media (max-width: $smallScreen) {
     & {
@@ -21,6 +21,11 @@
   display: grid;
   grid-template: repeat(10, 2rem) / repeat(10, 2rem);
   user-select: none;
+  @media (max-width: $smallScreen) {
+    & {
+      grid-template: repeat(10, 1.5rem) / repeat(10, 1.5rem);
+    }
+  }
 }
 
 .disabled {

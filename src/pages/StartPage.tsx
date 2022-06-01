@@ -12,7 +12,7 @@ const StartPage = () => {
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={`${styles.container} `}>
         {!isGameInProgress && <Dock />}
         <UserBoardComponent />
         <PartnerBoardComponent />

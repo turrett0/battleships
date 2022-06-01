@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect, useRef, useState} from "react";
+import {FC, useCallback, useEffect, useRef, useState} from "react";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
 import {IShip} from "../../models/Ship";
@@ -23,7 +23,8 @@ const ShipComponent: FC<Props> = ({ship}) => {
   );
 
   const endDrag = () => {
-    document.removeEventListener("mousemove", mouseMoveHandler);
+    document.removeEventListener("pointermove", mouseMoveHandler);
+
     if (shipRef.current) {
       setDraggingShip(null);
       shipRef.current.style.position = "relative";
@@ -31,22 +32,27 @@ const ShipComponent: FC<Props> = ({ship}) => {
       shipRef.current.style.top = 0 + "px";
       setIsDraggingState(false);
       setIsDragging(false);
-      findCurrent && setIsSetted(true);
+      setIsSetted(true);
     }
   };
 
   useEffect(() => {
-    console.log(isDraggingGlobal);
+    if (!findCurrent && !isDraggingGlobal) {
+      setIsSetted(false);
+    }
+  }, [findCurrent]);
+
+  useEffect(() => {
     if (!isDraggingGlobal && findCurrent) {
       endDrag();
     }
   }, [isDraggingGlobal]);
 
-  const mouseMoveHandler = useCallback((e: MouseEvent) => {
+  const mouseMoveHandler = useCallback((e: PointerEvent) => {
     if (shipRef.current) {
       shipRef.current.style.position = "absolute";
-      shipRef.current.style.left = e.clientX + "px";
-      shipRef.current.style.top = e.clientY + "px";
+      shipRef.current.style.left = e.x + "px";
+      shipRef.current.style.top = e.y + "px";
     }
   }, []);
 
@@ -58,15 +64,21 @@ const ShipComponent: FC<Props> = ({ship}) => {
     >
       <div
         ref={shipRef}
-        onMouseDown={() => {
+        onPointerDown={(e) => {
+          const element = e.target as HTMLElement;
+          element.releasePointerCapture(e.pointerId);
           if (shipRef.current && !findCurrent) {
             setDraggingShip(ship);
             setIsDraggingState(true);
             setIsDragging(true);
-            document.addEventListener("mousemove", mouseMoveHandler);
+            document.addEventListener("pointermove", mouseMoveHandler);
           }
         }}
-        onMouseUp={endDrag}
+        onPointerUp={(e) => {
+          const element = e.target as HTMLElement;
+          element.releasePointerCapture(e.pointerId);
+          endDrag();
+        }}
         className={`${styles.ship} ${styles[ship.size]} ${
           isDraggingState ? styles.candrag : ""
         }  ${

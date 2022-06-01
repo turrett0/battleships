@@ -1,4 +1,4 @@
-import {FC} from "react";
+import {FC, useRef} from "react";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
 import {ICell} from "../../models/Cell";
@@ -39,24 +39,20 @@ const CellComponent: FC<Props> = ({cell, setCell}) => {
       } ${cell.ship ? styles.setted : ""} ${
         cell.isCompletelyDestroyed ? styles.completelyDestroyed : ""
       }`}
-      onMouseOver={() => {
+      onPointerOver={() => {
         if (!cell.highlighted && isDraggingGlobal && !isGameInProgress) {
           setHighlightCell(cell);
         }
       }}
-      onMouseLeave={() => {
+      onPointerLeave={() => {
         if (isDraggingGlobal && !isGameInProgress) {
           removeHighlightCell(cell);
         }
       }}
-      onMouseUp={onMouseUpHandler}
-      onMouseDown={() => {
-        if (!isGameInProgress) {
-          setCell(cell);
-        }
-      }}
-      onTouchStart={() => {
-        console.log("touch start");
+      onPointerUp={onMouseUpHandler}
+      onPointerDown={(e) => {
+        const element = e.target as HTMLElement;
+        element.releasePointerCapture(e.pointerId);
         if (!isGameInProgress) {
           setCell(cell);
         }

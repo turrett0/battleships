@@ -2,7 +2,6 @@ import {nanoid} from "nanoid";
 import {FC, Fragment} from "react";
 import {requireServerShoot} from "../../../api/socketIO/actions";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
-import useActions from "../../../hooks/useActions";
 import {ICell} from "../../../models/Cell";
 import {gameStatuses} from "../../../store/slices/appSlice/state";
 import {IShoot} from "../../../store/slices/boardSlice";

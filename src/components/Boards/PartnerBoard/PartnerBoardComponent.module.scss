@@ -20,13 +20,13 @@
   grid-template: repeat(10, 2rem) / repeat(10, 2rem);
   user-select: none;
   margin: 1.5rem 0;
+  @media (max-width: $smallScreen) {
+    & {
+      grid-template: repeat(10, 1.5rem) / repeat(10, 1.5rem);
+    }
+  }
 }
 
 .disabled {
   opacity: 0.3;
-  @media (max-width: $smallScreen) {
-    & {
-      display: none;
-    }
-  }
 }

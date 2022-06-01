@@ -3,7 +3,6 @@ import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
 import {BoardState, IShoot} from ".";
 import {getValidCoords, isCanPlace} from "./helpers";
-import {AppState} from "../appSlice";
 
 export const setDraggingShip: CaseReducer<
   BoardState,
@@ -22,61 +21,61 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
       state.draggingShip
     );
 
-    if (!isCanPlace(state.userBoard, x, y, state.draggingShip)) return;
+    if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
+      const newYCoords = {
+        startX: x,
+        endX: x,
+        startY: y,
+        endY,
+      };
+      const newXCoords = {
+        startX: x,
+        endX: endX,
+        startY: y,
+        endY: y,
+      };
 
-    const newYCoords = {
-      startX: x,
-      endX: x,
-      startY: y,
-      endY,
-    };
-    const newXCoords = {
-      startX: x,
-      endX: endX,
-      startY: y,
-      endY: y,
-    };
+      if (
+        !state.draggingShip.coords ||
+        state.draggingShip.coords?.startX !== state.draggingShip.coords?.endX
+      ) {
+        for (let i = x; i <= endX; i++) {
+          const element = state.userBoard.cells[y][i];
 
-    if (
-      !state.draggingShip.coords ||
-      state.draggingShip.coords?.startX !== state.draggingShip.coords?.endX
-    ) {
-      for (let i = x; i <= endX; i++) {
-        const element = state.userBoard.cells[y][i];
+          element.ship = {
+            ...createShip(shipSizes.SMALL, newXCoords, state.draggingShip.id),
+          };
+          element.highlighted = false;
+        }
 
-        element.ship = {
-          ...createShip(shipSizes.SMALL, newXCoords, state.draggingShip.id),
-        };
-        element.highlighted = false;
+        state.dock.push({
+          ...createShip(
+            state.draggingShip.size,
+            newXCoords,
+            state.draggingShip.id
+          ),
+        });
+      } else {
+        for (let i = y; i <= endY; i++) {
+          const element = state.userBoard.cells[i][x];
+          element.ship = {
+            ...createShip(shipSizes.SMALL, newYCoords, state.draggingShip.id),
+          };
+          element.highlighted = false;
+        }
+
+        state.dock.push({
+          ...createShip(
+            state.draggingShip.size,
+            newYCoords,
+            state.draggingShip.id
+          ),
+        });
       }
 
-      state.dock.push({
-        ...createShip(
-          state.draggingShip.size,
-          newXCoords,
-          state.draggingShip.id
-        ),
-      });
-    } else {
-      for (let i = y; i <= endY; i++) {
-        const element = state.userBoard.cells[i][x];
-        element.ship = {
-          ...createShip(shipSizes.SMALL, newYCoords, state.draggingShip.id),
-        };
-        element.highlighted = false;
-      }
-
-      state.dock.push({
-        ...createShip(
-          state.draggingShip.size,
-          newYCoords,
-          state.draggingShip.id
-        ),
-      });
+      state.isDragging = false;
+      state.isHiddenDraggableElement = false;
     }
-
-    state.isDragging = false;
-    state.isHiddenDraggableElement = false;
   }
 };
 
@@ -198,20 +197,21 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
     endY: !currentAxis ? y : yAxis,
   };
 
-  console.log(coords);
-
   if (y + currentShip.health > 10 || x + currentShip.health > 10) {
-    // console.log("three");
+    console.log("three");
     return;
   }
   for (let index = y; index <= yAxis; index++) {
     if (
       (state.userBoard.cells[index][x].ship ||
         state.userBoard.cells[index][x + 1 > 9 ? 9 : x + 1].ship ||
+        state.userBoard.cells[coords.endY + 1][x].ship ||
+        state.userBoard.cells[coords.endY + 1][x + 1].ship ||
+        state.userBoard.cells[coords.endY + 1][x - 1].ship ||
         state.userBoard.cells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
       state.userBoard.cells[index][x].ship?.id !== currentShip.id
     ) {
-      // console.log("one");
+      console.log("one");
       return;
     }
   }
@@ -222,7 +222,7 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
         state.userBoard.cells[y - 1 < 0 ? 0 : y - 1][index].ship) &&
       state.userBoard.cells[y][index].ship?.id !== currentShip.id
     ) {
-      // console.log("two");
+      console.log("two");
       return;
     }
   }
