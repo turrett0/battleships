@@ -3,6 +3,7 @@ import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
 import {BoardState, IShoot} from ".";
 import {getValidCoords, isCanPlace} from "./helpers";
+import {AppState} from "../appSlice";
 
 export const setDraggingShip: CaseReducer<
   BoardState,

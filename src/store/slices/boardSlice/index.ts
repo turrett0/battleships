@@ -1,5 +1,4 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {turnData} from "../../../api/socketIO/state";
 import {IBoard, createBoard, roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";

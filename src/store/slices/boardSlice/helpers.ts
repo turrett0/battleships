@@ -80,10 +80,7 @@ export const isCanPlace = (
         board.cells[index][x - 1 < 0 ? 0 : x - 1].ship ||
         board.cells[index][x + 1 > 9 ? 9 : x + 1].ship ||
         board.cells[lastVerticalIndex][x].ship ||
-        board.cells[lastVerticalIndex + 1 > 9 ? 9 : lastVerticalIndex + 1][
-          x - 1 < 0 ? 0 : x - 1
-        ].ship ||
-        board.cells[lastVerticalIndex + 1 > 9 ? 9 : lastVerticalIndex + 1][
+        board.cells[lastVerticalIndex > 9 ? 9 : lastVerticalIndex][
           x + 1 > 9 ? 9 : x + 1
         ].ship
       ) {

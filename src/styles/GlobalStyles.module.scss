@@ -12,6 +12,7 @@ $defaultDisabledColor: lightgray;
 $smallScreen: 1000px;
 $missedDotColor: black;
 $missedDotColorReversed: white;
+$shootedColor: red;
 
 @mixin shipAppear {
   background-color: rgba($shipColor, $mainBorderOpacity);

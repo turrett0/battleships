@@ -24,7 +24,6 @@ const ShipComponent: FC<Props> = ({ship}) => {
 
   const endDrag = () => {
     document.removeEventListener("mousemove", mouseMoveHandler);
-    // console.log("mouse up", shipRef.current);
     if (shipRef.current) {
       setDraggingShip(null);
       shipRef.current.style.position = "relative";
@@ -37,6 +36,7 @@ const ShipComponent: FC<Props> = ({ship}) => {
   };
 
   useEffect(() => {
+    console.log(isDraggingGlobal);
     if (!isDraggingGlobal && findCurrent) {
       endDrag();
     }
@@ -66,6 +66,7 @@ const ShipComponent: FC<Props> = ({ship}) => {
             document.addEventListener("mousemove", mouseMoveHandler);
           }
         }}
+        onMouseUp={endDrag}
         className={`${styles.ship} ${styles[ship.size]} ${
           isDraggingState ? styles.candrag : ""
         }  ${

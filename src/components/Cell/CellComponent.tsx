@@ -13,7 +13,7 @@ interface Props {
 const CellComponent: FC<Props> = ({cell, setCell}) => {
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const isGameInProgress =
-    useAppSelector(({app}) => app.gameData.status) === gameStatuses.PLAYING;
+    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
   const {setShipToCell, setHighlightCell, removeHighlightCell, rotateElement} =
     useActions();
 

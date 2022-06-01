@@ -6,6 +6,7 @@ import {
   setGameData,
   setUserData,
   setUserTurn,
+  setSessionID,
 } from "./actions";
 import {connectionStatuses, gameStatuses, IUserData} from "./state";
 
@@ -40,6 +41,7 @@ const appSlice = createSlice({
     setConnectionStatus,
     setUserTurn,
     setUserData,
+    setSessionID,
   },
 });
 

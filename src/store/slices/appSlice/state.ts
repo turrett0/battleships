@@ -10,6 +10,7 @@ export enum gameStatuses {
   PLAYING = "PLAYING",
   INIT = "INIT",
   AWAITING = "AWAITING",
+  PRIVATE_AWAITING = "PRIVATE_AWAITING",
 }
 
 export interface IUserData {

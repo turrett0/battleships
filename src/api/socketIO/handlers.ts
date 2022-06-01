@@ -7,6 +7,7 @@ export const serverRegistrationHandler = (data: IUserData) => {
 };
 
 export const serverSetNewGameHandler = (data: GameData) => {
+  console.log(data);
   const isUserFirstTurn =
     store.getState().app.userData?.userID === data.firstTurnID;
   store.dispatch({
@@ -52,4 +53,13 @@ export const serverBreakGameHandler = (data: string) => {
   });
   console.log(data);
   alert(data);
+};
+
+export const serverPingSessionHandler = (data: string | null) => {
+  console.log(data);
+  if (data) {
+    store.dispatch({type: "app/setSessionID", payload: data});
+  } else {
+    alert("Такой сессии не существует.");
+  }
 };

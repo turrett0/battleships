@@ -1,6 +1,10 @@
 import {nanoid} from "nanoid";
 import {FC, Fragment, useCallback, useEffect, useRef, useState} from "react";
-import {requireServerNewGame} from "../../../api/socketIO/actions";
+import {
+  requireServerJoinPrivateGame,
+  requireServerNewGame,
+  requireServerPrivateGame,
+} from "../../../api/socketIO/actions";
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
 import {roles} from "../../../models/Board";
@@ -13,6 +17,7 @@ import LetterBlock from "../../LetterBlock/LetterBlock";
 import styles from "./UserBoardComponent.module.scss";
 
 const UserBoardComponent: FC = () => {
+  const [isPrivateGame, setIsPrivateGame] = useState<boolean>(false);
   const board = useAppSelector((app) => app.board.userBoard);
   const {
     setIsHiddenDraggableElement,
@@ -24,6 +29,7 @@ const UserBoardComponent: FC = () => {
     useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
   const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
   const draggingElement = useAppSelector(({board}) => board.draggingShip);
+  const sessionID = useAppSelector(({app}) => app.gameData.sessionID);
   const boardRef = useRef<HTMLDivElement>(null);
   const dock = useAppSelector(({board}) => board.dock);
   const [cell, setCell] = useState<ICell | null>(null);
@@ -50,7 +56,13 @@ const UserBoardComponent: FC = () => {
   }, [mouseMoveHandler, cell]);
 
   const startGameHandler = () => {
-    requireServerNewGame();
+    if (isPrivateGame) {
+      requireServerPrivateGame(dock);
+    } else if (sessionID) {
+      requireServerJoinPrivateGame(dock, sessionID);
+    } else {
+      requireServerNewGame(dock);
+    }
   };
 
   return (
@@ -91,9 +103,20 @@ const UserBoardComponent: FC = () => {
         ))}
       </div>
       {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
+        <CustomButton disabled={dock.length !== 1} callback={startGameHandler}>
           Начать игру
         </CustomButton>
+      )}
+      <label>
+        <input
+          type="checkbox"
+          onChange={(e) => setIsPrivateGame(e.target.checked)}
+          checked={isPrivateGame}
+        />
+        <span>Игра с другом</span>
+      </label>
+      {sessionID && isPrivateGame && (
+        <span>{`${window.location.href}id${sessionID}`}</span>
       )}
     </div>
   );

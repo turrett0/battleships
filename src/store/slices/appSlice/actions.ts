@@ -26,3 +26,10 @@ export const setUserData: CaseReducer<
 > = (state, action) => {
   state.userData = action.payload;
 };
+
+export const setSessionID: CaseReducer<AppState, PayloadAction<string>> = (
+  state,
+  action
+) => {
+  state.gameData.sessionID = action.payload;
+};

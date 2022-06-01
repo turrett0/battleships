@@ -9,6 +9,7 @@ import {
   serverBreakGameHandler,
   serverEndGameHandler,
   serverGetNewShootHandler,
+  serverPingSessionHandler,
   serverRegistrationHandler,
   serverSetNewGameHandler,
 } from "./handlers";
@@ -55,8 +56,13 @@ gameSocket.on(gameSocketEvents.ON_SET_GAME, (data) =>
 );
 
 gameSocket.on(gameSocketEvents.ON_AWAIT_GAME, (data) => {
+  console.log(data);
   store.dispatch({type: "app/setGameData", payload: data});
 });
+
+gameSocket.on(gameSocketEvents.ON_PING_PRIVATE_SESSION, (data: string | null) =>
+  serverPingSessionHandler(data)
+);
 
 gameSocket.on(gameSocketEvents.ON_NEW_SHOOT, (data: IShoot) =>
   serverGetNewShootHandler(data)
