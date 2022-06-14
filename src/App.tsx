@@ -1,8 +1,7 @@
-import {FC, useEffect} from "react";
+import {FC} from "react";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 import Layout from "./components/Layout/Layout";
-import {useAppSelector} from "./hooks/store/useAppSelector";
 import StartPage from "./pages/StartPage";
 
 const App: FC = () => {

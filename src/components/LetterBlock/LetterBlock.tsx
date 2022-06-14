@@ -1,5 +1,4 @@
-import {nanoid} from "nanoid";
-import React, {FC} from "react";
+import {FC} from "react";
 import styles from "./LetterBlock.module.scss";
 
 interface Props {
@@ -11,7 +10,7 @@ const LetterBlock: FC<Props> = ({content, role}) => {
   return (
     <div className={styles[role]}>
       {content.map((block) => (
-        <span key={nanoid()}>{block}</span> //sets every render
+        <span key={block}>{block}</span> //sets every render
       ))}
     </div>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import PartnerBoardComponent from "../components/Boards/PartnerBoard/PartnerBoardComponent";
 import UserBoardComponent from "../components/Boards/UserBoard/UserBoardComponent";
 import Dock from "../components/Dock/Dock";

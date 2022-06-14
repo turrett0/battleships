@@ -1,4 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {nanoid} from "nanoid";
 import {IBoard, createBoard, roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
@@ -24,7 +25,10 @@ export type BoardState = {
   partnerBoard: IBoard;
   draggingShip: IShip | null;
   dock: IShip[];
-  initDock: IShip[][];
+  initDock: {
+    port: IShip[];
+    id: string;
+  }[];
   isDragging: boolean;
   isGameInProgress: boolean;
   isHiddenDraggableElement: boolean;
@@ -51,19 +55,32 @@ const initialState: BoardState = {
   isHiddenDraggableElement: false,
   turnsHistory: [],
   initDock: [
-    [
-      createShip(shipSizes.SMALL, null),
-      createShip(shipSizes.SMALL, null),
-      createShip(shipSizes.SMALL, null),
-      createShip(shipSizes.SMALL, null),
-    ],
-    [
-      createShip(shipSizes.MIDDLE, null),
-      createShip(shipSizes.MIDDLE, null),
-      createShip(shipSizes.MIDDLE, null),
-    ],
-    [createShip(shipSizes.BIG, null), createShip(shipSizes.BIG, null)],
-    [createShip(shipSizes.VERY_BIG, null)],
+    {
+      id: nanoid(),
+
+      port: [
+        createShip(shipSizes.SMALL, null),
+        createShip(shipSizes.SMALL, null),
+        createShip(shipSizes.SMALL, null),
+        createShip(shipSizes.SMALL, null),
+      ],
+    },
+    {
+      id: nanoid(),
+      port: [
+        createShip(shipSizes.MIDDLE, null),
+        createShip(shipSizes.MIDDLE, null),
+        createShip(shipSizes.MIDDLE, null),
+      ],
+    },
+    {
+      id: nanoid(),
+      port: [createShip(shipSizes.BIG, null), createShip(shipSizes.BIG, null)],
+    },
+    {
+      id: nanoid(),
+      port: [createShip(shipSizes.VERY_BIG, null)],
+    },
   ],
 };
 
