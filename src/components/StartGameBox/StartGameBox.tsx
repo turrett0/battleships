@@ -91,7 +91,7 @@ const StartGameBox: FC = () => {
         </>
       )}
       {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 1} callback={startGameHandler}>
+        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
           Начать игру
         </CustomButton>
       )}
