@@ -1,5 +1,4 @@
 import {ICell} from "../../models/Cell";
-import {AppState} from "../../store/slices/appSlice";
 import {gameStatuses, IUserData} from "../../store/slices/appSlice/state";
 
 export enum gameSocketEvents {
@@ -11,6 +10,7 @@ export enum gameSocketEvents {
   ON_NEW_SHOOT = "NEW_SHOOT",
   ON_BREAK_GAME = "BREAK_GAME",
   ON_PING_PRIVATE_SESSION = "PING_PRIVATE_SESSION",
+  ON_INTERNAL_ERROR = "INTERNAL_ERROR",
 }
 
 export enum gameSocketAction {

@@ -15,7 +15,7 @@ import {
 } from "./handlers";
 import {gameSocketEvents} from "./state";
 
-export const gameSocket = io("ws://192.168.3.7:6969");
+export const gameSocket = io("https://turrett0-battleships.herokuapp.com");
 
 gameSocket.on("connect", () => {
   const userData = store.getState().app.userData;
@@ -56,7 +56,6 @@ gameSocket.on(gameSocketEvents.ON_SET_GAME, (data) =>
 );
 
 gameSocket.on(gameSocketEvents.ON_AWAIT_GAME, (data) => {
-  console.log(data);
   store.dispatch({type: "app/setGameData", payload: data});
 });
 

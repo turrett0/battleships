@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {Routes, Route, HashRouter} from "react-router-dom";
 
 import Layout from "./components/Layout/Layout";
 import StartPage from "./pages/StartPage";
@@ -7,15 +7,14 @@ import StartPage from "./pages/StartPage";
 const App: FC = () => {
   return (
     <>
-      <Router>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<StartPage />} />
             <Route path="/:id" element={<StartPage />} />
           </Route>
-          <Route path="/kek" element={<Layout />} />
         </Routes>
-      </Router>
+      </HashRouter>
     </>
   );
 };

@@ -27,7 +27,6 @@ const UserBoardComponent: FC = () => {
 
   const mouseMoveHandler = useCallback(
     (e: PointerEvent) => {
-      console.log("move board");
       const element = e.target as HTMLElement;
       element.releasePointerCapture(e.pointerId);
       if (cell && cell.ship && !isDraggingGlobal) {

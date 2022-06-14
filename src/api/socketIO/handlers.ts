@@ -7,7 +7,6 @@ export const serverRegistrationHandler = (data: IUserData) => {
 };
 
 export const serverSetNewGameHandler = (data: GameData) => {
-  console.log(data);
   const isUserFirstTurn =
     store.getState().app.userData?.userID === data.firstTurnID;
   store.dispatch({
@@ -51,15 +50,12 @@ export const serverBreakGameHandler = (data: string) => {
     type: "app/setGameData",
     payload: {status: gameStatuses.INIT, sessionID: null, partnerID: null},
   });
-  console.log(data);
   alert(data);
 };
 
 export const serverPingSessionHandler = (data: string | null) => {
-  console.log(data);
   if (data) {
-    store.dispatch({type: "app/setSessionID", payload: data});
-    store.dispatch({type: "app/setIsPrivateGame", payload: true});
+    store.dispatch({type: "app/setPrivateSession", payload: data});
   } else {
     alert("Такой сессии не существует.");
   }

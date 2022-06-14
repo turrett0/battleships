@@ -6,7 +6,7 @@ import {
   setGameData,
   setUserData,
   setUserTurn,
-  setSessionID,
+  setPrivateSession,
   setIsPrivateGame,
 } from "./actions";
 import {connectionStatuses, gameStatuses, IUserData} from "./state";
@@ -44,7 +44,7 @@ const appSlice = createSlice({
     setConnectionStatus,
     setUserTurn,
     setUserData,
-    setSessionID,
+    setPrivateSession,
     setIsPrivateGame,
   },
 });

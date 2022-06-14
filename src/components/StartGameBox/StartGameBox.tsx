@@ -16,7 +16,7 @@ const StartGameBox: FC = () => {
   const {setIsPrivateGame} = useActions();
   const sessionID = useAppSelector(({app}) => app.gameData.sessionID);
   const isPrivateGame = useAppSelector(({app}) => app.gameData.isPrivateGame);
-  const shareLink = `${window.location.href}id${sessionID}`;
+  const shareLink = `${window.location.href}#/id${sessionID}`;
 
   const isGameInProgress =
     useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
@@ -91,7 +91,7 @@ const StartGameBox: FC = () => {
         </>
       )}
       {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
+        <CustomButton disabled={dock.length !== 1} callback={startGameHandler}>
           Начать игру
         </CustomButton>
       )}

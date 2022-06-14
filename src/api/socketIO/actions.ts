@@ -8,7 +8,6 @@ import {gameSocketAction} from "./state";
 export const requireServerRegistration = (
   data: AppState["userData"] | null
 ): void => {
-  console.log("reg");
   gameSocket.emit(gameSocketAction.REQUEST_REGISTRATION, data);
 };
 

@@ -102,7 +102,6 @@ export const isCanRotate = (
   yAxis: number
 ): boolean => {
   if (y + currentShip.health > 10 || x + currentShip.health > 10) {
-    console.log("three");
     return false;
   }
   for (let index = y; index <= yAxis; index++) {
@@ -115,7 +114,6 @@ export const isCanRotate = (
         boardCells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
       boardCells[index][x].ship?.id !== currentShip.id
     ) {
-      console.log("one");
       return false;
     }
   }
@@ -126,7 +124,6 @@ export const isCanRotate = (
         boardCells[y - 1 < 0 ? 0 : y - 1][index].ship) &&
       boardCells[y][index].ship?.id !== currentShip.id
     ) {
-      console.log("two");
       return false;
     }
   }

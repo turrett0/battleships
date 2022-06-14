@@ -4,7 +4,7 @@ import Header from "../Header/Header";
 
 const Layout = () => {
   const params = useLocation();
-  console.log(params.pathname.includes("/id"));
+  console.log(params);
   if (params.pathname !== "/id" && params.pathname.includes("/id")) {
     const sessionID = params.pathname.split("id")[1];
     requireServerSessionPing(sessionID);
