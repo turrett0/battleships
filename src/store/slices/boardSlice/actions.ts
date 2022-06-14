@@ -2,7 +2,7 @@ import {CaseReducer, PayloadAction, current} from "@reduxjs/toolkit";
 import {ICell} from "../../../models/Cell";
 import {createShip, IShip, shipSizes} from "../../../models/Ship";
 import {BoardState, IShoot} from ".";
-import {getValidCoords, isCanPlace} from "./helpers";
+import {getValidCoords, isCanPlace, isCanRotate} from "./helpers";
 
 export const setDraggingShip: CaseReducer<
   BoardState,
@@ -16,62 +16,39 @@ export const setShipToCell: CaseReducer<BoardState, PayloadAction<ICell>> = (
   action
 ): void => {
   if (state.draggingShip) {
-    const {x, y, endX, endY} = getValidCoords(
+    const {x, y, endX, endY, currentAxis} = getValidCoords(
       action.payload,
       state.draggingShip
     );
 
     if (isCanPlace(state.userBoard, x, y, state.draggingShip)) {
-      const newYCoords = {
+      const currentAxisStart = currentAxis ? x : y;
+      const currentAxisEnd = currentAxis ? endX : endY;
+
+      const coords = {
         startX: x,
-        endX: x,
+        endX: currentAxis ? endX : x,
         startY: y,
-        endY,
-      };
-      const newXCoords = {
-        startX: x,
-        endX: endX,
-        startY: y,
-        endY: y,
+        endY: currentAxis ? y : endY,
       };
 
-      if (
-        !state.draggingShip.coords ||
-        state.draggingShip.coords?.startX !== state.draggingShip.coords?.endX
-      ) {
-        for (let i = x; i <= endX; i++) {
-          const element = state.userBoard.cells[y][i];
+      for (let i = currentAxisStart; i <= currentAxisEnd; i++) {
+        const element = currentAxis
+          ? state.userBoard.cells[y][i]
+          : state.userBoard.cells[i][x];
 
-          element.ship = {
-            ...createShip(shipSizes.SMALL, newXCoords, state.draggingShip.id),
-          };
-          element.highlighted = false;
-        }
+        element.ship = createShip(
+          shipSizes.SMALL,
+          coords,
+          state.draggingShip.id
+        );
 
-        state.dock.push({
-          ...createShip(
-            state.draggingShip.size,
-            newXCoords,
-            state.draggingShip.id
-          ),
-        });
-      } else {
-        for (let i = y; i <= endY; i++) {
-          const element = state.userBoard.cells[i][x];
-          element.ship = {
-            ...createShip(shipSizes.SMALL, newYCoords, state.draggingShip.id),
-          };
-          element.highlighted = false;
-        }
-
-        state.dock.push({
-          ...createShip(
-            state.draggingShip.size,
-            newYCoords,
-            state.draggingShip.id
-          ),
-        });
+        element.highlighted = false;
       }
+
+      state.dock.push(
+        createShip(state.draggingShip.size, coords, state.draggingShip.id)
+      );
 
       state.isDragging = false;
       state.isHiddenDraggableElement = false;
@@ -183,13 +160,13 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
   );
   const x = currentShip.coords?.startX as number;
   const y = currentShip.coords?.startY as number;
+
+  let yAxis = y + currentShip.health > 9 ? 9 : y + currentShip.health - 1;
+  let xAxis = x + currentShip.health > 9 ? 9 : x + currentShip.health - 1;
   const currentAxisStart = currentAxis ? x : y;
   const currentAxisEnd = currentAxis
     ? x + currentShip.health - 1
     : y + currentShip.health - 1;
-
-  let yAxis = y + currentShip.health > 9 ? 9 : y + currentShip.health - 1;
-  let xAxis = x + currentShip.health > 9 ? 9 : x + currentShip.health;
   let coords: IShip["coords"] = {
     startX: x,
     endX: !currentAxis ? xAxis : x,
@@ -197,53 +174,28 @@ export const rotateElement: CaseReducer<BoardState, PayloadAction<ICell>> = (
     endY: !currentAxis ? y : yAxis,
   };
 
-  if (y + currentShip.health > 10 || x + currentShip.health > 10) {
-    console.log("three");
-    return;
-  }
-  for (let index = y; index <= yAxis; index++) {
-    if (
-      (state.userBoard.cells[index][x].ship ||
-        state.userBoard.cells[index][x + 1 > 9 ? 9 : x + 1].ship ||
-        state.userBoard.cells[coords.endY + 1][x].ship ||
-        state.userBoard.cells[coords.endY + 1][x + 1].ship ||
-        state.userBoard.cells[coords.endY + 1][x - 1].ship ||
-        state.userBoard.cells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
-      state.userBoard.cells[index][x].ship?.id !== currentShip.id
-    ) {
-      console.log("one");
-      return;
+  if (
+    isCanRotate(x, y, currentShip, coords, state.userBoard.cells, xAxis, yAxis)
+  ) {
+    for (let j = currentAxisStart; j <= currentAxisEnd; j++) {
+      let element = currentAxis
+        ? state.userBoard.cells[y][j]
+        : state.userBoard.cells[j][x];
+      element.ship = null;
     }
-  }
-  for (let index = x; index <= xAxis; index++) {
-    if (
-      (state.userBoard.cells[y][index].ship ||
-        state.userBoard.cells[y + 1 > 9 ? 9 : y + 1][index].ship ||
-        state.userBoard.cells[y - 1 < 0 ? 0 : y - 1][index].ship) &&
-      state.userBoard.cells[y][index].ship?.id !== currentShip.id
-    ) {
-      console.log("two");
-      return;
+    for (let i = secondAxisStart; i <= secondAxisEnd; i++) {
+      let element2 = !currentAxis
+        ? state.userBoard.cells[y][i]
+        : state.userBoard.cells[i][x];
+      element2.ship = {
+        ...createShip(shipSizes.SMALL, coords, currentShip.id),
+      };
     }
-  }
 
-  for (let j = currentAxisStart; j <= currentAxisEnd; j++) {
-    let element = currentAxis
-      ? state.userBoard.cells[y][j]
-      : state.userBoard.cells[j][x];
-    element.ship = null;
+    state.dock = state.dock.map((ship) =>
+      ship.id === currentShip.id ? {...currentShip, coords} : ship
+    );
   }
-  for (let i = secondAxisStart; i <= secondAxisEnd; i++) {
-    let element2 = !currentAxis
-      ? state.userBoard.cells[y][i]
-      : state.userBoard.cells[i][x];
-    element2.ship = {
-      ...createShip(shipSizes.SMALL, coords, currentShip.id),
-    };
-  }
-  state.dock = state.dock.map((ship) =>
-    ship.id === currentShip.id ? {...currentShip, coords} : ship
-  );
 };
 
 export const setIsHiddenDraggableElement: CaseReducer<
@@ -277,7 +229,6 @@ export const getHit: CaseReducer<BoardState, PayloadAction<IShoot>> = (
   state,
   action
 ) => {
-  console.log("PAYLOAD:", action.payload);
   const coords = action.payload.coords;
   const targetCell = state.userBoard.cells[coords.y][coords.x];
   const shootedShip = state.dock.find(
@@ -293,8 +244,6 @@ export const getHit: CaseReducer<BoardState, PayloadAction<IShoot>> = (
         index <= shootedShip.coords?.endX;
         index++
       ) {
-        console.log(index, shootedShip.coords.startX, shootedShip.coords.endX);
-
         const element = state.userBoard.cells[shootedShip.coords.startY][index];
         element.isCompletelyDestroyed = true;
       }
@@ -303,8 +252,6 @@ export const getHit: CaseReducer<BoardState, PayloadAction<IShoot>> = (
         index <= shootedShip.coords?.endY;
         index++
       ) {
-        console.log(index, shootedShip.coords.startY, shootedShip.coords.endY);
-
         const element = state.userBoard.cells[index][shootedShip.coords.startX];
         element.isCompletelyDestroyed = true;
       }
@@ -322,22 +269,18 @@ export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
 ) => {
   const coords = action.payload.coords;
 
-  console.log("SET SHOOT:", action.payload);
-
   action.payload.isShooted
     ? (state.partnerBoard.cells[coords.y][coords.x].isShooted = true)
     : (state.partnerBoard.cells[coords.y][coords.x].isMissed = true);
 
   state.partnerBoard.cells[coords.y][coords.x].checked = true;
   state.turnsHistory.push(action.payload);
-  console.log(action.payload);
   if (action.payload.destroyedShipData?.coords) {
     for (
       let index = action.payload.destroyedShipData.coords.startX;
       index <= action.payload.destroyedShipData.coords.endX;
       index++
     ) {
-      console.log(index);
       const element =
         state.partnerBoard.cells[
           action.payload.destroyedShipData.coords.startY
@@ -349,7 +292,6 @@ export const setShoot: CaseReducer<BoardState, PayloadAction<IShoot>> = (
       index <= action.payload.destroyedShipData.coords.endY;
       index++
     ) {
-      console.log(index);
       const element =
         state.partnerBoard.cells[index][
           action.payload.destroyedShipData.coords.startX

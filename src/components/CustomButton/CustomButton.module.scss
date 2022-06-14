@@ -13,4 +13,5 @@
 
 .button:disabled {
   background-color: $defaultDisabledColor;
+  cursor: initial;
 }

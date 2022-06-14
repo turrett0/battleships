@@ -23,7 +23,7 @@ const PartnerCell: FC<Props> = ({cell, callback}) => {
       } ${cell.highlighted ? styles.selected : ""} ${
         cell.isCanNotPlace ? styles.canNotPlace : ""
       } ${cell.ship ? styles.setted : ""} ${
-        cell.isCompletelyDestroyed ? styles.completelyDestroyed : ""
+        cell.isCompletelyDestroyed ? styles["cell__completely__destroyed"] : ""
       }`}
     />
   );

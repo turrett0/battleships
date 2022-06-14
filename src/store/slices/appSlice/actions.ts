@@ -33,3 +33,10 @@ export const setSessionID: CaseReducer<AppState, PayloadAction<string>> = (
 ) => {
   state.gameData.sessionID = action.payload;
 };
+
+export const setIsPrivateGame: CaseReducer<AppState, PayloadAction<boolean>> = (
+  state,
+  action
+) => {
+  state.gameData.isPrivateGame = action.payload;
+};

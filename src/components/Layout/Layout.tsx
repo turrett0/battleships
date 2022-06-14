@@ -8,6 +8,7 @@ const Layout = () => {
   if (params.pathname !== "/id" && params.pathname.includes("/id")) {
     const sessionID = params.pathname.split("id")[1];
     requireServerSessionPing(sessionID);
+    window.history.replaceState(null, "", "/");
   }
   return (
     <>

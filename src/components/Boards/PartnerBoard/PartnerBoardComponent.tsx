@@ -7,6 +7,7 @@ import {gameStatuses} from "../../../store/slices/appSlice/state";
 import {IShoot} from "../../../store/slices/boardSlice";
 import PartnerCell from "../../Cell/PartnerCell";
 import LetterBlock from "../../LetterBlock/LetterBlock";
+import StartGameBox from "../../StartGameBox/StartGameBox";
 import styles from "./PartnerBoardComponent.module.scss";
 
 const PartnerBoardComponent: FC = () => {
@@ -33,34 +34,37 @@ const PartnerBoardComponent: FC = () => {
   };
 
   return (
-    <div
-      className={`${styles.container} ${
-        !isUserTurn || !isGameInProgress ? styles.disabled : ""
-      }`}
-    >
+    <div className={`${styles.container} `}>
       <span>Доска пользователя {board.username}</span>
-      <div className={`${styles.board}`}>
-        <LetterBlock
-          content={["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]}
-          role={"horizontal"}
-          key={nanoid()} //set every render
-        />
-        <LetterBlock
-          content={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-          role={"vertical"}
-          key={nanoid()} //set every render
-        />
-        {board.cells.map((row, index) => (
-          <Fragment key={index}>
-            {row.map((cell) => (
-              <PartnerCell
-                callback={onClickHandler}
-                cell={cell}
-                key={cell.id}
-              />
-            ))}
-          </Fragment>
-        ))}
+      <div className={styles["partner__board-inner"]}>
+        <div
+          className={`${styles.board} ${
+            !isUserTurn || !isGameInProgress ? styles.disabled : ""
+          }`}
+        >
+          <LetterBlock
+            content={["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "К"]}
+            role={"horizontal"}
+            key={nanoid()} //set every render
+          />
+          <LetterBlock
+            content={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+            role={"vertical"}
+            key={nanoid()} //set every render
+          />
+          {board.cells.map((row, index) => (
+            <Fragment key={index}>
+              {row.map((cell) => (
+                <PartnerCell
+                  callback={onClickHandler}
+                  cell={cell}
+                  key={cell.id}
+                />
+              ))}
+            </Fragment>
+          ))}
+        </div>
+        {!isGameInProgress && <StartGameBox />}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import {
   setUserData,
   setUserTurn,
   setSessionID,
+  setIsPrivateGame,
 } from "./actions";
 import {connectionStatuses, gameStatuses, IUserData} from "./state";
 
@@ -17,6 +18,7 @@ export type AppState = {
     sessionID: string | null;
     partnerID: string | null;
     isUserTurn: boolean;
+    isPrivateGame: boolean;
   };
 
   userData: IUserData | undefined;
@@ -24,6 +26,7 @@ export type AppState = {
 const initialState: AppState = {
   connectionStatus: connectionStatuses.CONNECTING,
   gameData: {
+    isPrivateGame: false,
     status: gameStatuses.INIT,
     sessionID: null,
     partnerID: null,
@@ -42,6 +45,7 @@ const appSlice = createSlice({
     setUserTurn,
     setUserData,
     setSessionID,
+    setIsPrivateGame,
   },
 });
 

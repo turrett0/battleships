@@ -59,6 +59,7 @@ export const serverPingSessionHandler = (data: string | null) => {
   console.log(data);
   if (data) {
     store.dispatch({type: "app/setSessionID", payload: data});
+    store.dispatch({type: "app/setIsPrivateGame", payload: true});
   } else {
     alert("Такой сессии не существует.");
   }

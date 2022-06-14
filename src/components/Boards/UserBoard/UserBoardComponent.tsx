@@ -1,38 +1,29 @@
 import {nanoid} from "nanoid";
 import {FC, Fragment, useCallback, useEffect, useRef, useState} from "react";
-import {
-  requireServerJoinPrivateGame,
-  requireServerNewGame,
-  requireServerPrivateGame,
-} from "../../../api/socketIO/actions";
+
 import {useAppSelector} from "../../../hooks/store/useAppSelector";
 import useActions from "../../../hooks/useActions";
-import {roles} from "../../../models/Board";
 import {ICell} from "../../../models/Cell";
 import {gameStatuses} from "../../../store/slices/appSlice/state";
 import CellComponent from "../../Cell/CellComponent";
-import CustomButton from "../../CustomButton/CustomButton";
 import LetterBlock from "../../LetterBlock/LetterBlock";
 
 import styles from "./UserBoardComponent.module.scss";
 
 const UserBoardComponent: FC = () => {
-  const [isPrivateGame, setIsPrivateGame] = useState<boolean>(false);
   const board = useAppSelector((app) => app.board.userBoard);
+  const isGameInProgress =
+    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
+  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
+  const draggingElement = useAppSelector(({board}) => board.draggingShip);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [cell, setCell] = useState<ICell | null>(null);
   const {
     setIsHiddenDraggableElement,
     changeElementPosition,
     setIsDragging,
     setDraggingShip,
   } = useActions();
-  const isGameInProgress =
-    useAppSelector(({app}) => app.gameData.status) !== gameStatuses.INIT;
-  const isDraggingGlobal = useAppSelector(({board}) => board.isDragging);
-  const draggingElement = useAppSelector(({board}) => board.draggingShip);
-  const sessionID = useAppSelector(({app}) => app.gameData.sessionID);
-  const boardRef = useRef<HTMLDivElement>(null);
-  const dock = useAppSelector(({board}) => board.dock);
-  const [cell, setCell] = useState<ICell | null>(null);
 
   const mouseMoveHandler = useCallback(
     (e: PointerEvent) => {
@@ -61,18 +52,12 @@ const UserBoardComponent: FC = () => {
     };
   }, [mouseMoveHandler, cell]);
 
-  const startGameHandler = () => {
-    if (isPrivateGame) {
-      requireServerPrivateGame(dock);
-    } else if (sessionID) {
-      requireServerJoinPrivateGame(dock, sessionID);
-    } else {
-      requireServerNewGame(dock);
-    }
-  };
-
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${
+        !isGameInProgress ? styles["container__selectable"] : ""
+      }`}
+    >
       <span>Моя Доска</span>
       <div
         ref={boardRef}
@@ -109,24 +94,6 @@ const UserBoardComponent: FC = () => {
           </Fragment>
         ))}
       </div>
-      {!isGameInProgress && (
-        <CustomButton disabled={dock.length !== 10} callback={startGameHandler}>
-          Начать игру
-        </CustomButton>
-      )}
-      <label>
-        <input
-          type="checkbox"
-          onChange={(e) => setIsPrivateGame(e.target.checked)}
-          checked={isPrivateGame}
-        />
-        <span>Игра с другом</span>
-      </label>
-      {sessionID && isPrivateGame && (
-        <span
-          style={{userSelect: "initial"}}
-        >{`${window.location.href}id${sessionID}`}</span>
-      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import {FC, useCallback, useEffect, useRef, useState} from "react";
 import {useAppSelector} from "../../hooks/store/useAppSelector";
 import useActions from "../../hooks/useActions";
 import {IShip} from "../../models/Ship";
+import {connectionStatuses} from "../../store/slices/appSlice/state";
 import styles from "./ShipComponent.module.scss";
 
 interface Props {
@@ -21,6 +22,9 @@ const ShipComponent: FC<Props> = ({ship}) => {
   const isHiddenDraggableElement = useAppSelector(
     ({board}) => board.isHiddenDraggableElement
   );
+  const isConnectionError =
+    useAppSelector(({app}) => app.connectionStatus) ===
+    connectionStatuses.ERROR;
 
   const endDrag = () => {
     document.removeEventListener("pointermove", mouseMoveHandler);
@@ -39,14 +43,10 @@ const ShipComponent: FC<Props> = ({ship}) => {
   useEffect(() => {
     if (!findCurrent && !isDraggingGlobal) {
       setIsSetted(false);
-    }
-  }, [findCurrent]);
-
-  useEffect(() => {
-    if (!isDraggingGlobal && findCurrent) {
+    } else if (!isDraggingGlobal && findCurrent) {
       endDrag();
     }
-  }, [isDraggingGlobal]);
+  }, [findCurrent, isDraggingGlobal]);
 
   const mouseMoveHandler = useCallback((e: PointerEvent) => {
     if (shipRef.current) {
@@ -63,11 +63,19 @@ const ShipComponent: FC<Props> = ({ship}) => {
       }`}
     >
       <div
+        className={`${styles.ship} ${styles[ship.size]} ${
+          isDraggingState ? styles.candrag : ""
+        }  ${
+          isSetted ||
+          (isHiddenDraggableElement && draggingElement?.id === ship.id)
+            ? styles.hidden
+            : ""
+        } ${isConnectionError ? styles.setted : ""}`}
         ref={shipRef}
         onPointerDown={(e) => {
           const element = e.target as HTMLElement;
           element.releasePointerCapture(e.pointerId);
-          if (shipRef.current && !findCurrent) {
+          if (shipRef.current && !findCurrent && !isConnectionError) {
             setDraggingShip(ship);
             setIsDraggingState(true);
             setIsDragging(true);
@@ -79,14 +87,6 @@ const ShipComponent: FC<Props> = ({ship}) => {
           element.releasePointerCapture(e.pointerId);
           endDrag();
         }}
-        className={`${styles.ship} ${styles[ship.size]} ${
-          isDraggingState ? styles.candrag : ""
-        }  ${
-          isSetted ||
-          (isHiddenDraggableElement && draggingElement?.id === ship.id)
-            ? styles.hidden
-            : ""
-        } `}
       />
     </div>
   );

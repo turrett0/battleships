@@ -91,3 +91,45 @@ export const isCanPlace = (
 
   return true;
 };
+
+export const isCanRotate = (
+  x: number,
+  y: number,
+  currentShip: IShip,
+  coords: any,
+  boardCells: IBoard["cells"],
+  xAxis: number,
+  yAxis: number
+): boolean => {
+  if (y + currentShip.health > 10 || x + currentShip.health > 10) {
+    console.log("three");
+    return false;
+  }
+  for (let index = y; index <= yAxis; index++) {
+    if (
+      (boardCells[index][x]?.ship ||
+        boardCells[index][x + 1 > 9 ? 9 : x + 1].ship ||
+        boardCells[coords.endY + 1][x].ship ||
+        boardCells[coords.endY + 1][x + 1].ship ||
+        boardCells[coords.endY + 1][x - 1 < 0 ? 0 : x - 1].ship ||
+        boardCells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
+      boardCells[index][x].ship?.id !== currentShip.id
+    ) {
+      console.log("one");
+      return false;
+    }
+  }
+  for (let index = x; index <= xAxis; index++) {
+    if (
+      (boardCells[y][index].ship ||
+        boardCells[y + 1 > 9 ? 9 : y + 1][index].ship ||
+        boardCells[y - 1 < 0 ? 0 : y - 1][index].ship) &&
+      boardCells[y][index].ship?.id !== currentShip.id
+    ) {
+      console.log("two");
+      return false;
+    }
+  }
+
+  return true;
+};

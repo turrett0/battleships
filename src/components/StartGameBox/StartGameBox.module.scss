@@ -1,0 +1,79 @@
+@import "../../styles//GlobalStyles.module.scss";
+
+.start__game__box {
+  position: absolute;
+  top: calc(50% - 3rem);
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  width: 14rem;
+  height: 3rem;
+  color: black;
+  fill: black;
+
+  & label.disabled {
+    cursor: initial;
+    opacity: 0.3;
+  }
+
+  &-link {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0.5rem;
+    font-style: italic;
+    width: 100%;
+    border: 1px solid black;
+    padding: 5px 10px;
+    cursor: pointer;
+
+    &:hover {
+      color: $positiveColor;
+      fill: $positiveColor;
+    }
+
+    & svg,
+    & span {
+      color: inherit;
+      fill: inherit;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  &-radio {
+    display: none;
+    &.disabled {
+      opacity: 0.3;
+    }
+  }
+}
+
+.choose__box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+
+  &-inner {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &-text {
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    background-color: lightgray;
+    color: black;
+    cursor: pointer;
+    transition: 0.1s ease-in;
+  }
+  &-text.active {
+    color: $positiveColor;
+  }
+}

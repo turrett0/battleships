@@ -12,7 +12,7 @@ const Dock = () => {
     <div className={styles.container}>
       <div className={styles.port}>
         {initDock.map((dock) => (
-          <div className={styles.dock} key={nanoid()}>
+          <div className={styles["port__dock"]} key={nanoid()}>
             {dock.map((ship) => (
               <ShipComponent ship={ship} key={ship.id} />
             ))}
