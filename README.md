@@ -3,7 +3,6 @@ The BattleShips Game.
 Features : 
 1. Game with friend with URL Link
 2. Game with random user
-3. 
 
 ### `npm start`
 
