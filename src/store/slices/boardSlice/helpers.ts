@@ -108,9 +108,11 @@ export const isCanRotate = (
     if (
       (boardCells[index][x]?.ship ||
         boardCells[index][x + 1 > 9 ? 9 : x + 1].ship ||
-        boardCells[coords.endY + 1][x].ship ||
-        boardCells[coords.endY + 1][x + 1].ship ||
-        boardCells[coords.endY + 1][x - 1 < 0 ? 0 : x - 1].ship ||
+        boardCells[coords.endY + 1 > 9 ? 9 : coords.endY + 1][x].ship ||
+        boardCells[coords.endY + 1 > 9 ? 9 : coords.endY + 1][x + 1].ship ||
+        boardCells[coords.endY + 1 > 9 ? 9 : coords.endY + 1][
+          x - 1 < 0 ? 0 : x - 1
+        ].ship ||
         boardCells[index][x - 1 < 0 ? 0 : x - 1].ship) &&
       boardCells[index][x].ship?.id !== currentShip.id
     ) {
